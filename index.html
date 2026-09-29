@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Malad-Jogeshwari Transit Study | TY B.Sc. CS Project</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <!-- Navigation Bar -->
+    <nav id="navbar">
+        <div class="nav-container">
+            <div class="brand">
+                <img src="images/media_1790712977890.png" alt="BEST Logo" class="brand-logo">
+                Malad-Jogeshwari Transit Study
+            </div>
+            <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Toggle Menu">
+                <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+            </button>
+            <ul class="nav-links" id="nav-links">
+                <li><a href="#overview">Overview</a></li>
+                <li><a href="#methodology">Methodology</a></li>
+                <li><a href="#depot-workflow">Depot Workflow</a></li>
+                <li><a href="#field-data">Field Data</a></li>
+                <li><a href="#commuter-journey">Commuter Journey</a></li>
+                <li><a href="#dashboard-concept">Dashboard</a></li>
+                <li><a href="#gallery">Photos</a></li>
+                <li><a href="#official-docs">Proof of Visit</a></li>
+                <li><a href="#recommendations">Recommendations</a></li>
+                <li><a href="#team">Team</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="hero">
+        <div class="container hero-content">
+            <div class="metadata-badges">
+                <span class="badge">TY B.Sc. CS</span>
+                <span class="badge">Ismail Yusuf College</span>
+                <span class="badge">Field Study 2026</span>
+            </div>
+            <h1 class="project-title">Assessment of Peak-Hour Student Commuting Patterns, BEST Bus Operational Workflows, and Corridor Accessibility</h1>
+            <h2 class="project-subtitle">A Community Engagement & Data Analytics Research Project on the Malad–Jogeshwari Transit Line</h2>
+            
+            <div class="hero-glass-panel">
+                <div class="glass-topic"><strong>Research Topic:</strong> Public Transport Field Study on Malad-Jogeshwari Line</div>
+                <div class="glass-team">
+                    <div class="glass-member">Mohammed Faisal Abdul Qadir Shaikh <span class="glass-roll">(Roll No: 26TCS44)</span></div>
+                    <div class="glass-member">Sarvesh Surendra Malaye <span class="glass-roll">(Roll No: 26TCS29)</span></div>
+                </div>
+            </div>
+
+            <div class="hero-actions">
+                <a href="#field-data" class="btn btn-primary">Explore Field Data</a>
+                <a href="#dashboard-concept" class="btn btn-secondary">View Dashboard Prototype</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Executive Overview -->
+    <section id="overview" class="container section">
+        <div class="section-header">
+            <h2>Executive Overview & Problem Statement</h2>
+            <p class="section-desc">Understanding the daily commute challenges on the Malad–Jogeshwari BEST bus corridor.</p>
+        </div>
+        <div class="overview-content">
+            <div class="overview-text">
+                <h3>Background</h3>
+                <p>The Malad–Jogeshwari transit corridor serves as a critical artery for thousands of students and daily commuters in Mumbai. With several educational institutions and commercial hubs along this route, the BEST bus network is the primary mode of affordable public transport.</p>
+                
+                <h3>The Challenge</h3>
+                <p>During peak hours, this corridor experiences severe congestion, leading to a cascade of operational and commuter challenges:</p>
+                <ul class="challenge-list">
+                    <li><strong>Peak-Hour Student Rush:</strong> Overwhelming demand outstripping supply during college start and end times.</li>
+                    <li><strong>Traffic Bottlenecks:</strong> Unpredictable delays caused by narrow road segments and illegal parking.</li>
+                    <li><strong>Waiting Time Uncertainties:</strong> Significant discrepancies between scheduled times and actual arrivals.</li>
+                    <li><strong>Boarding Hazards:</strong> Overcrowded stops leading to unsafe boarding practices and stampede-like situations.</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- 7-Step Methodology -->
+    <section id="methodology" class="section bg-light">
+        <div class="container">
+            <div class="section-header">
+                <h2>Field Research Methodology</h2>
+                <p class="section-desc">Our 7-step approach to empirical data collection and analysis.</p>
+            </div>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-marker">1</div>
+                    <div class="timeline-content">
+                        <h4>Problem Identification</h4>
+                        <p>Initial scoping of transit issues faced by the student community.</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-marker">2</div>
+                    <div class="timeline-content">
+                        <h4>Field Observation</h4>
+                        <p>On-ground assessment of bus stops and traffic conditions during peak hours.</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-marker">3</div>
+                    <div class="timeline-content">
+                        <h4>BEST Staff Interviews</h4>
+                        <p>Gathering operational insights from conductors and depot starters.</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-marker">4</div>
+                    <div class="timeline-content">
+                        <h4>Data Logging</h4>
+                        <p>Recording actual vs. scheduled arrival times and crowding levels.</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-marker">5</div>
+                    <div class="timeline-content">
+                        <h4>Empirical Analysis</h4>
+                        <p>Statistical evaluation of ETA variances and peak load factors.</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-marker">6</div>
+                    <div class="timeline-content">
+                        <h4>Dashboard Architecture</h4>
+                        <p>Designing a conceptual digital solution for real-time tracking.</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-marker">7</div>
+                    <div class="timeline-content">
+                        <h4>Recommendations</h4>
+                        <p>Proposing actionable short-term and long-term policy interventions.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Depot Workflow -->
+    <section id="depot-workflow" class="container section">
+        <div class="section-header">
+            <h2>BEST Bus Depot Operational Workflow</h2>
+            <p class="section-desc">The daily lifecycle of bus dispatch from the Majas Depot.</p>
+        </div>
+        <div class="workflow-diagram">
+            <div class="workflow-card">
+                <div class="workflow-icon">🔧</div>
+                <h4>1. Inspection</h4>
+                <p>Pre-trip mechanical & safety checks by engineering staff.</p>
+            </div>
+            <div class="workflow-arrow">→</div>
+            <div class="workflow-card">
+                <div class="workflow-icon">👨‍✈️</div>
+                <h4>2. Crew Allocation</h4>
+                <p>Assigning driver and conductor duties based on schedule.</p>
+            </div>
+            <div class="workflow-arrow">→</div>
+            <div class="workflow-card">
+                <div class="workflow-icon">📋</div>
+                <h4>3. Starter Clearance</h4>
+                <p>Final logbook entry and route briefing by the depot starter.</p>
+            </div>
+            <div class="workflow-arrow">→</div>
+            <div class="workflow-card">
+                <div class="workflow-icon">🚌</div>
+                <h4>4. Active Service</h4>
+                <p>Bus operates on designated corridor picking up commuters.</p>
+            </div>
+            <div class="workflow-arrow">→</div>
+            <div class="workflow-card">
+                <div class="workflow-icon">🏢</div>
+                <h4>5. Depot Return</h4>
+                <p>End of shift, cash deposit, and parking at depot.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Interactive Field Data -->
+    <section id="field-data" class="section bg-light">
+        <div class="container">
+            <div class="section-header">
+                <h2>Interactive Field Data & Survey Findings</h2>
+                <p class="section-desc">Empirical logs collected from bus stops along the corridor.</p>
+            </div>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">+18 Mins</div>
+                    <div class="stat-label">Average Delay</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">4.6 / 5</div>
+                    <div class="stat-label">Peak Load Index</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">±8 Mins</div>
+                    <div class="stat-label">App ETA Variance</div>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <div class="table-controls">
+                    <input type="text" id="searchInput" placeholder="Search by Route No or Stop Location..." aria-label="Search data">
+                </div>
+                <div class="table-responsive">
+                    <table id="dataTable">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Route No</th>
+                                <th>Stop Location</th>
+                                <th>Scheduled Arrival</th>
+                                <th>Actual Arrival</th>
+                                <th>Delay (mins)</th>
+                                <th>Crowding (1-5)</th>
+                                <th>Chalo ETA Accuracy</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>15-Sep-2026</td>
+                                <td>348 LTD</td>
+                                <td>Ismail Yusuf College</td>
+                                <td>08:15 AM</td>
+                                <td>08:32 AM</td>
+                                <td class="delay-high">17</td>
+                                <td>5</td>
+                                <td>Poor</td>
+                            </tr>
+                            <tr>
+                                <td>15-Sep-2026</td>
+                                <td>454</td>
+                                <td>Jogeshwari Station (E)</td>
+                                <td>08:30 AM</td>
+                                <td>08:52 AM</td>
+                                <td class="delay-high">22</td>
+                                <td>5</td>
+                                <td>Poor</td>
+                            </tr>
+                            <tr>
+                                <td>16-Sep-2026</td>
+                                <td>348 LTD</td>
+                                <td>Ismail Yusuf College</td>
+                                <td>09:00 AM</td>
+                                <td>09:12 AM</td>
+                                <td class="delay-med">12</td>
+                                <td>4</td>
+                                <td>Fair</td>
+                            </tr>
+                            <tr>
+                                <td>16-Sep-2026</td>
+                                <td>307</td>
+                                <td>Majas Depot</td>
+                                <td>09:15 AM</td>
+                                <td>09:20 AM</td>
+                                <td class="delay-low">5</td>
+                                <td>3</td>
+                                <td>Good</td>
+                            </tr>
+                            <tr>
+                                <td>17-Sep-2026</td>
+                                <td>498 LTD</td>
+                                <td>Goregaon Check Naka</td>
+                                <td>08:45 AM</td>
+                                <td>09:04 AM</td>
+                                <td class="delay-high">19</td>
+                                <td>5</td>
+                                <td>Poor</td>
+                            </tr>
+                            <tr>
+                                <td>17-Sep-2026</td>
+                                <td>454</td>
+                                <td>Ismail Yusuf College</td>
+                                <td>12:30 PM</td>
+                                <td>12:35 PM</td>
+                                <td class="delay-low">5</td>
+                                <td>2</td>
+                                <td>Good</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Commuter Journey Map -->
+    <section id="commuter-journey" class="container section">
+        <div class="section-header">
+            <h2>Student Commuter Journey Map</h2>
+            <p class="section-desc">The typical 4-stage experience of a college student during peak hours.</p>
+        </div>
+        <div class="journey-map">
+            <div class="journey-stage">
+                <div class="stage-number">1</div>
+                <h4>Walk to Stop</h4>
+                <p>Navigating crowded pavements to reach the designated bus shelter.</p>
+            </div>
+            <div class="journey-stage">
+                <div class="stage-number">2</div>
+                <h4>Waiting at Shelter</h4>
+                <p>Dealing with unpredictable wait times and inaccurate app estimates.</p>
+            </div>
+            <div class="journey-stage">
+                <div class="stage-number">3</div>
+                <h4>Boarding Bottleneck</h4>
+                <p>Struggling to board overcrowded buses amid high competition.</p>
+            </div>
+            <div class="journey-stage">
+                <div class="stage-number">4</div>
+                <h4>Transit to Campus</h4>
+                <p>Standing in cramped conditions while navigating traffic snarls.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Dashboard Concept -->
+    <section id="dashboard-concept" class="section bg-dark text-light">
+        <div class="container">
+            <div class="section-header">
+                <h2>Digital Transit Dashboard Prototype</h2>
+                <p class="section-desc">A conceptual web interface utilizing GTFS and GPS data for optimized dispatch.</p>
+            </div>
+            
+            <div class="dashboard-tabs">
+                <button class="tab-btn active" data-tab="dispatcher">Dispatcher View</button>
+                <button class="tab-btn" data-tab="commuter">Commuter View</button>
+                <button class="tab-btn" data-tab="analytics">Data Analytics</button>
+            </div>
+            
+            <div class="dashboard-content">
+                <div id="dispatcher" class="tab-pane active">
+                    <div class="mockup-window">
+                        <div class="mockup-header">
+                            <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+                            <span class="mockup-title">BEST Dispatch Control - Majas Depot</span>
+                        </div>
+                        <div class="mockup-body">
+                            <div class="mockup-grid">
+                                <div class="mockup-panel">
+                                    <h4>Active Fleet Map</h4>
+                                    <div class="mock-map">📍 Bus 348 LTD (Delayed - 12m)<br>📍 Bus 454 (On Time)<br>📍 Bus 307 (En Route)</div>
+                                </div>
+                                <div class="mockup-panel">
+                                    <h4>Crew Roster</h4>
+                                    <ul>
+                                        <li>Driver A - Route 348 - Ready</li>
+                                        <li>Driver B - Route 454 - In Transit</li>
+                                        <li>Driver C - Route 307 - Break</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="commuter" class="tab-pane">
+                    <div class="mockup-window">
+                        <div class="mockup-header">
+                            <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+                            <span class="mockup-title">Student Commuter Portal</span>
+                        </div>
+                        <div class="mockup-body text-center">
+                            <h4>Stop: Ismail Yusuf College</h4>
+                            <div class="arrival-card">
+                                <strong>348 LTD to Goregaon</strong>
+                                <span class="eta text-danger">Arriving in 15 mins (High Crowding)</span>
+                            </div>
+                            <div class="arrival-card">
+                                <strong>454 to Andheri</strong>
+                                <span class="eta text-success">Arriving in 3 mins (Low Crowding)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="analytics" class="tab-pane">
+                    <div class="mockup-window">
+                        <div class="mockup-header">
+                            <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+                            <span class="mockup-title">Performance Analytics</span>
+                        </div>
+                        <div class="mockup-body">
+                            <div class="mock-chart-container">
+                                <h4>Average Delays by Route (Peak Hours)</h4>
+                                <div class="mock-bar-chart">
+                                    <div class="bar" style="width: 80%;">348 LTD - 18m</div>
+                                    <div class="bar" style="width: 60%;">498 LTD - 14m</div>
+                                    <div class="bar" style="width: 90%;">454 - 22m</div>
+                                    <div class="bar" style="width: 30%;">307 - 6m</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Field Gallery -->
+    <section id="gallery" class="container section">
+        <div class="section-header">
+            <h2>Field Documentation</h2>
+            <p class="section-desc">Visual insights from our on-ground study.</p>
+        </div>
+        <div class="gallery-grid">
+            <div class="gallery-item" onclick="openModal('images/media_1790712995790.jpg', 'Majas Bus Depot Operations')">
+                <img src="images/media_1790712995790.jpg" alt="Majas Bus Depot Operations" loading="lazy">
+                <div class="gallery-caption">Majas Bus Depot & Tower</div>
+            </div>
+            <div class="gallery-item" onclick="openModal('images/media_1790712660863.jpg', 'BEST Bus Depot Dispatch Operations')">
+                <img src="images/media_1790712660863.jpg" alt="BEST Bus Depot Dispatch Operations" loading="lazy">
+                <div class="gallery-caption">BEST Bus Depot Operations Overview</div>
+            </div>
+            <div class="gallery-item" onclick="openModal('images/media_1790712660851.jpg', 'Morning Rush-Hour Queue at Bus Stop')">
+                <img src="images/media_1790712660851.jpg" alt="Morning Rush-Hour Queue at Bus Stop" loading="lazy">
+                <div class="gallery-caption">Rush-Hour Queue at Bus Stop</div>
+            </div>
+            <div class="gallery-item" onclick="openModal('images/media_1790712660842.jpg', 'Conductor & Starter Staff Operations')">
+                <img src="images/media_1790712660842.jpg" alt="Conductor & Starter Staff Operations" loading="lazy">
+                <div class="gallery-caption">Majas Depot Engineering & Staffing</div>
+            </div>
+            <div class="gallery-item" onclick="openModal('images/media_1790712660903.jpg', 'Team Field Logging & Observations')">
+                <img src="images/media_1790712660903.jpg" alt="Team Field Logging & Observations" loading="lazy">
+                <div class="gallery-caption">Buses Queued for Active Dispatch</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Modal for Gallery -->
+    <div id="imageModal" class="modal">
+        <span class="close-modal">&times;</span>
+        <img class="modal-content" id="modalImg">
+        <div id="modalCaption"></div>
+    </div>
+
+    <!-- Official Documents -->
+    <section id="official-docs" class="container section">
+        <div class="section-header">
+            <h2>Official Proof of Visit</h2>
+            <p class="section-desc">Academic permissions and formal acknowledgement from BEST Depot officials.</p>
+        </div>
+        <div class="docs-grid">
+            <div class="doc-item" onclick="openModal('images/media_1790713343402.jpg', 'Official Request for Academic Project Visit')">
+                <img src="images/media_1790713343402.jpg" alt="Official Request Letter" loading="lazy">
+                <div class="doc-caption">Official Visit Request Letter</div>
+            </div>
+            <div class="doc-item" onclick="openModal('images/media_1790713333527.jpg', 'Field Visit Acknowledgement & Certificate of Attendance')">
+                <img src="images/media_1790713333527.jpg" alt="Certificate of Attendance" loading="lazy">
+                <div class="doc-caption">Field Visit Acknowledgement Certificate</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Recommendations -->
+    <section id="recommendations" class="section bg-light">
+        <div class="container">
+            <div class="section-header">
+                <h2>Actionable Recommendations & Policy Insights</h2>
+                <p class="section-desc">Proposed solutions to alleviate commuter stress and optimize depot operations.</p>
+            </div>
+            
+            <div class="recommendation-grid">
+                <div class="recommendation-card">
+                    <div class="rec-badge short-term">Short-Term</div>
+                    <h3>Special Student Shuttles</h3>
+                    <p>Deploy point-to-point shuttle services linking major railway stations directly to educational clusters during key college timings (7 AM - 9 AM & 12 PM - 2 PM).</p>
+                </div>
+                <div class="recommendation-card">
+                    <div class="rec-badge short-term">Short-Term</div>
+                    <h3>Organized Physical Queues</h3>
+                    <p>Install barricades and employ traffic wardens at high-density stops like Ismail Yusuf College to ensure orderly boarding and prevent stampedes.</p>
+                </div>
+                <div class="recommendation-card">
+                    <div class="rec-badge long-term">Long-Term</div>
+                    <h3>Dynamic GPS Dispatching</h3>
+                    <p>Transition from static schedule-based dispatching to demand-responsive dispatching utilizing real-time GPS fleet tracking and crowd density metrics.</p>
+                </div>
+                <div class="recommendation-card">
+                    <div class="rec-badge long-term">Long-Term</div>
+                    <h3>Digital Pass Integration</h3>
+                    <p>Mandate and optimize RFID-based digital student passes via the Chalo app to reduce cash transaction times during boarding, speeding up the dwell time at stops.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="team">
+        <div class="container">
+            <div class="footer-content">
+                <div class="team-section">
+                    <h3>Project Team</h3>
+                    <div class="team-grid">
+                        <div class="team-card">
+                            <h4>Mohammed Faisal Abdul Qadir Shaikh</h4>
+                            <p>Roll No: 26TCS44</p>
+                            <p>TY B.Sc. Computer Science</p>
+                        </div>
+                        <div class="team-card">
+                            <h4>Sarvesh Surendra Malaye</h4>
+                            <p>Roll No: 26TCS29</p>
+                            <p>TY B.Sc. Computer Science</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="college-info">
+                    <h4>Ismail Yusuf College of Arts, Science & Commerce</h4>
+                    <p>Department of Computer Science</p>
+                    <p>Academic Year: 2026</p>
+                </div>
+            </div>
+            <div class="acknowledgments">
+                <p><strong>Acknowledgments:</strong> We extend our sincere gratitude to the BEST Undertaking supervisory staff at Majas Depot and our college mentors for their guidance during this field study.</p>
+                <p class="disclaimer"><em>This is an academic research project and is not officially affiliated with the BEST Undertaking.</em></p>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2026 Transit Study Research Team. Handcrafted for academic purposes.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>
