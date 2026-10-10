@@ -185,110 +185,81 @@
         </div>
     </section>
 
-    <!-- Interactive Field Data -->
-    <section id="field-data" class="section bg-light">
-        <div class="container">
+    <!-- Field Survey Data & Analytics -->
+    <section id="field-data" class="section hero" style="padding-top: 5rem; padding-bottom: 5rem; height: auto; background-attachment: fixed;">
+        <div class="container hero-content" style="max-width: 1200px;">
             <div class="section-header">
-                <h2>Interactive Field Data & Survey Findings</h2>
-                <p class="section-desc">Empirical logs collected from bus stops along the corridor.</p>
+                <h2 style="color: white;">Field Survey Data & Analytics</h2>
+                <p class="section-desc" style="color: #cbd5e0; margin-bottom: 2rem;">Empirical insights from 60 commuter responses along the Malad-Jogeshwari corridor.</p>
             </div>
             
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-value">+18 Mins</div>
-                    <div class="stat-label">Average Delay</div>
+            <div class="survey-stats-grid">
+                <div class="hero-glass-panel stat-glass-card">
+                    <div class="stat-glass-value">60</div>
+                    <div class="stat-glass-label">Total Responses Collected</div>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-value">4.6 / 5</div>
-                    <div class="stat-label">Peak Load Index</div>
+                <div class="hero-glass-panel stat-glass-card">
+                    <div class="stat-glass-value">24.5<small>m</small></div>
+                    <div class="stat-glass-label">Avg Peak Hour Wait Time</div>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-value">±8 Mins</div>
-                    <div class="stat-label">App ETA Variance</div>
+                <div class="hero-glass-panel stat-glass-card">
+                    <div class="stat-glass-value">52%</div>
+                    <div class="stat-glass-label">Overcrowding Issue</div>
+                </div>
+                <div class="hero-glass-panel stat-glass-card">
+                    <div class="stat-glass-value">68%</div>
+                    <div class="stat-glass-label">App Accuracy Satisfaction</div>
                 </div>
             </div>
 
-            <div class="table-container">
-                <div class="table-controls">
-                    <input type="text" id="searchInput" placeholder="Search by Route No or Stop Location..." aria-label="Search data">
+            <div class="charts-grid">
+                <div class="hero-glass-panel chart-glass-panel">
+                    <h4>Commuter Category Distribution</h4>
+                    <div class="canvas-wrapper"><canvas id="categoryChart"></canvas></div>
                 </div>
-                <div class="table-responsive">
-                    <table id="dataTable">
+                <div class="hero-glass-panel chart-glass-panel">
+                    <h4>Peak Hour Wait Time Breakdown</h4>
+                    <div class="canvas-wrapper"><canvas id="waitTimeChart"></canvas></div>
+                </div>
+                <div class="hero-glass-panel chart-glass-panel chart-full-width">
+                    <h4>Primary Commuter Issues</h4>
+                    <div class="canvas-wrapper canvas-bar-wrapper"><canvas id="issuesChart"></canvas></div>
+                </div>
+            </div>
+
+            <div class="hero-glass-panel table-glass-panel">
+                <div class="table-glass-controls">
+                    <input type="text" id="surveySearchInput" placeholder="Search by Location, Category, or Suggestion..." class="glass-input" aria-label="Search survey data">
+                    <select id="surveyCategoryFilter" class="glass-select" aria-label="Filter by Category">
+                        <option value="All">All Categories</option>
+                        <option value="School / College Student">School / College Student</option>
+                        <option value="Working Professional / Daily Commuter">Working Professional / Daily Commuter</option>
+                        <option value="Senior Citizen">Senior Citizen</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div class="table-responsive glass-table-responsive">
+                    <table id="surveyDataTable" class="glass-table">
                         <thead>
                             <tr>
+                                <th>ID</th>
                                 <th>Date</th>
-                                <th>Route No</th>
                                 <th>Stop Location</th>
-                                <th>Scheduled Arrival</th>
-                                <th>Actual Arrival</th>
-                                <th>Delay (mins)</th>
-                                <th>Crowding (1-5)</th>
-                                <th>Chalo ETA Accuracy</th>
+                                <th>Category</th>
+                                <th>Wait Time</th>
+                                <th>Main Issue</th>
+                                <th>Digital Suggestion</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr>
-                                <td>15-Sep-2026</td>
-                                <td>348 LTD</td>
-                                <td>Ismail Yusuf College</td>
-                                <td>08:15 AM</td>
-                                <td>08:32 AM</td>
-                                <td class="delay-high">17</td>
-                                <td>5</td>
-                                <td>Poor</td>
-                            </tr>
-                            <tr>
-                                <td>15-Sep-2026</td>
-                                <td>454</td>
-                                <td>Jogeshwari Station (E)</td>
-                                <td>08:30 AM</td>
-                                <td>08:52 AM</td>
-                                <td class="delay-high">22</td>
-                                <td>5</td>
-                                <td>Poor</td>
-                            </tr>
-                            <tr>
-                                <td>16-Sep-2026</td>
-                                <td>348 LTD</td>
-                                <td>Ismail Yusuf College</td>
-                                <td>09:00 AM</td>
-                                <td>09:12 AM</td>
-                                <td class="delay-med">12</td>
-                                <td>4</td>
-                                <td>Fair</td>
-                            </tr>
-                            <tr>
-                                <td>16-Sep-2026</td>
-                                <td>307</td>
-                                <td>Majas Depot</td>
-                                <td>09:15 AM</td>
-                                <td>09:20 AM</td>
-                                <td class="delay-low">5</td>
-                                <td>3</td>
-                                <td>Good</td>
-                            </tr>
-                            <tr>
-                                <td>17-Sep-2026</td>
-                                <td>498 LTD</td>
-                                <td>Goregaon Check Naka</td>
-                                <td>08:45 AM</td>
-                                <td>09:04 AM</td>
-                                <td class="delay-high">19</td>
-                                <td>5</td>
-                                <td>Poor</td>
-                            </tr>
-                            <tr>
-                                <td>17-Sep-2026</td>
-                                <td>454</td>
-                                <td>Ismail Yusuf College</td>
-                                <td>12:30 PM</td>
-                                <td>12:35 PM</td>
-                                <td class="delay-low">5</td>
-                                <td>2</td>
-                                <td>Good</td>
-                            </tr>
+                        <tbody id="surveyTableBody">
+                            <!-- Populated by JS -->
                         </tbody>
                     </table>
+                </div>
+                <div class="glass-pagination">
+                    <button id="prevPageBtn" class="btn btn-glass" disabled>Previous</button>
+                    <span id="pageIndicator" class="glass-page-indicator">Page 1 of 6</span>
+                    <button id="nextPageBtn" class="btn btn-glass">Next</button>
                 </div>
             </div>
         </div>
@@ -528,6 +499,7 @@
         </div>
     </footer>
 
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="app.js"></script>
 </body>
 </html>
