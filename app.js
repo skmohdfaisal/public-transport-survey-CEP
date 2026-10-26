@@ -66,6 +66,11 @@ document.addEventListener('DOMContentLoaded', function() {
         initCharts();
         initTable();
     }
+
+    // 5. Interactive Corridor Operations Hub (6 Features)
+    if (document.getElementById('interactive-transit-hub')) {
+        initInteractiveTransitHub();
+    }
 });
 
 // =====================================================================
@@ -336,3 +341,615 @@ function renderTable() {
     if (prevBtn) prevBtn.disabled = (currentPage === 1);
     if (nextBtn) nextBtn.disabled = (currentPage === totalPages);
 }
+
+// =====================================================================
+// INTERACTIVE CORRIDOR OPERATIONS HUB (6 FEATURES)
+// =====================================================================
+function initInteractiveTransitHub() {
+    initRouteCalculator();
+    initChaloAccuracyMeter();
+    initAccessibilityScorecard();
+    initCrowdDensitySlider();
+    initCommuterReportingFeed();
+}
+
+// ---------------------------------------------------------------------
+// 2. Route, Fare & Peak-Hour Delay Calculator
+// ---------------------------------------------------------------------
+function initRouteCalculator() {
+    var originSelect = document.getElementById('originSelect');
+    var destSelect = document.getElementById('destSelect');
+    var calcBtn = document.getElementById('calcRouteBtn');
+
+    if (!originSelect || !destSelect || !calcBtn) return;
+
+    var routeMatrix = {
+        "Malad Station (W) -> Ismail Yusuf College": {
+            offPeak: "16 mins", peak: "42 mins", delay: "+26 mins", fare: "₹6 (Non-AC) / ₹10 (AC)",
+            routes: ["Route 202", "Route 203", "Route 459"],
+            note: "📍 Bottlenecks at SV Road Mith Chowki & Jogeshwari West flyover during 8:00–10:30 AM college rush."
+        },
+        "Malad Station (W) -> Jogeshwari Station": {
+            offPeak: "14 mins", peak: "36 mins", delay: "+22 mins", fare: "₹6 (Non-AC) / ₹6 (AC)",
+            routes: ["Route 202", "Route 203"],
+            note: "📍 Severe choke point near Oshiwara bridge and SV Road signal."
+        },
+        "Malad Station (W) -> Andheri Station": {
+            offPeak: "24 mins", peak: "55 mins", delay: "+31 mins", fare: "₹10 (Non-AC) / ₹15 (AC)",
+            routes: ["Route 202", "Route 459"],
+            note: "📍 Major delay crossing Jogeshwari flyover and Andheri subway junctions."
+        },
+        "Malad Station (W) -> Mindspace Malad": {
+            offPeak: "8 mins", peak: "20 mins", delay: "+12 mins", fare: "₹6 (Non-AC) / ₹6 (AC)",
+            routes: ["Route 203", "Route 290"],
+            note: "📍 Link Road commercial corridor; high passenger turnaround at Inorbit Mall stop."
+        },
+        "Mith Chowki -> Ismail Yusuf College": {
+            offPeak: "14 mins", peak: "38 mins", delay: "+24 mins", fare: "₹6 (Non-AC) / ₹10 (AC)",
+            routes: ["Route 202", "Route 203"],
+            note: "📍 Mith Chowki flyover construction causes 15+ min queueing during morning rush."
+        },
+        "Mith Chowki -> Jogeshwari Station": {
+            offPeak: "12 mins", peak: "32 mins", delay: "+20 mins", fare: "₹6 (Non-AC) / ₹6 (AC)",
+            routes: ["Route 202", "Route 203"],
+            note: "📍 Signal delay at Behram Baug junction on SV Road."
+        },
+        "Mith Chowki -> Andheri Station": {
+            offPeak: "22 mins", peak: "48 mins", delay: "+26 mins", fare: "₹10 (Non-AC) / ₹15 (AC)",
+            routes: ["Route 202", "Route 459"],
+            note: "📍 High traffic density along Link Road and SV Road intersection."
+        },
+        "Mith Chowki -> Mindspace Malad": {
+            offPeak: "6 mins", peak: "15 mins", delay: "+9 mins", fare: "₹6 (Non-AC) / ₹6 (AC)",
+            routes: ["Route 203"],
+            note: "📍 Direct connection down Link Road; mild queue at Mindspace signal."
+        },
+        "Goregaon Bus Depot -> Ismail Yusuf College": {
+            offPeak: "9 mins", peak: "25 mins", delay: "+16 mins", fare: "₹6 (Non-AC) / ₹6 (AC)",
+            routes: ["Route 202", "Route 345", "Route 459"],
+            note: "📍 Direct connectivity via Western Express Highway; bus departure delays from depot bay."
+        },
+        "Goregaon Bus Depot -> Jogeshwari Station": {
+            offPeak: "10 mins", peak: "24 mins", delay: "+14 mins", fare: "₹6 (Non-AC) / ₹6 (AC)",
+            routes: ["Route 202", "Route 345"],
+            note: "📍 Moderate delay near Goregaon Flyover exit into SV Road."
+        },
+        "Goregaon Bus Depot -> Andheri Station": {
+            offPeak: "18 mins", peak: "40 mins", delay: "+22 mins", fare: "₹10 (Non-AC) / ₹12 (AC)",
+            routes: ["Route 345", "Route 459"],
+            note: "📍 Heavy bottleneck on WEH near Hub Mall and Gundavali metro station."
+        },
+        "Goregaon Bus Depot -> Mindspace Malad": {
+            offPeak: "12 mins", peak: "28 mins", delay: "+16 mins", fare: "₹6 (Non-AC) / ₹6 (AC)",
+            routes: ["Route 203", "Route 459"],
+            note: "📍 Westbound vehicles face delays at Goregaon railway level/subway crossing."
+        },
+        "Oshiwara -> Ismail Yusuf College": {
+            offPeak: "11 mins", peak: "29 mins", delay: "+18 mins", fare: "₹6 (Non-AC) / ₹6 (AC)",
+            routes: ["Route 203", "Route 459"],
+            note: "📍 Good road conditions on Link Road; choke point at Jogeshwari West link bridge."
+        },
+        "Oshiwara -> Jogeshwari Station": {
+            offPeak: "8 mins", peak: "20 mins", delay: "+12 mins", fare: "₹6 (Non-AC) / ₹6 (AC)",
+            routes: ["Route 203"],
+            note: "📍 Short transit distance; rickshaw halting causes stop congestion."
+        },
+        "Oshiwara -> Andheri Station": {
+            offPeak: "16 mins", peak: "38 mins", delay: "+22 mins", fare: "₹6 (Non-AC) / ₹10 (AC)",
+            routes: ["Route 203", "Route 459"],
+            note: "📍 Heavy peak hour delay near D.N. Nagar Metro interchange."
+        },
+        "Oshiwara -> Mindspace Malad": {
+            offPeak: "10 mins", peak: "22 mins", delay: "+12 mins", fare: "₹6 (Non-AC) / ₹6 (AC)",
+            routes: ["Route 203"],
+            note: "📍 Northbound corridor runs faster; slight delay near Infiniti Mall."
+        },
+        "Jogeshwari (E) -> Ismail Yusuf College": {
+            offPeak: "5 mins", peak: "14 mins", delay: "+9 mins", fare: "₹6 (Non-AC) / ₹6 (AC)",
+            routes: ["Route 202", "Route 345"],
+            note: "📍 Immediate neighborhood connection; pedestrian spillover near WEH highway slip."
+        },
+        "Jogeshwari (E) -> Jogeshwari Station": {
+            offPeak: "6 mins", peak: "16 mins", delay: "+10 mins", fare: "₹6 (Non-AC) / ₹6 (AC)",
+            routes: ["Route 202", "Route 345"],
+            note: "📍 Severe east-west railway subway bottleneck with narrow carriage width."
+        },
+        "Jogeshwari (E) -> Andheri Station": {
+            offPeak: "12 mins", peak: "30 mins", delay: "+18 mins", fare: "₹6 (Non-AC) / ₹10 (AC)",
+            routes: ["Route 345", "Route 459"],
+            note: "📍 Western Express Highway south-bound queue near Bisleri junction."
+        },
+        "Jogeshwari (E) -> Mindspace Malad": {
+            offPeak: "20 mins", peak: "46 mins", delay: "+26 mins", fare: "₹10 (Non-AC) / ₹15 (AC)",
+            routes: ["Route 202", "Route 203"],
+            note: "📍 Cross-corridor trip traversing east-west subway and busy SV Road market zone."
+        }
+    };
+
+    function updateCalculator() {
+        var origin = originSelect.value;
+        var dest = destSelect.value;
+        var key = origin + ' -> ' + dest;
+
+        var data = routeMatrix[key];
+        if (!data) {
+            // Default calculation if identical or unlisted
+            data = {
+                offPeak: "12 mins",
+                peak: "30 mins",
+                delay: "+18 mins",
+                fare: "₹6 (Non-AC) / ₹10 (AC)",
+                routes: ["Route 202", "Route 203"],
+                note: "📍 Standard corridor travel. Expect delays at primary traffic junctions during peak periods."
+            };
+        }
+
+        var resOffPeak = document.getElementById('resOffPeak');
+        var resPeak = document.getElementById('resPeak');
+        var resDelay = document.getElementById('resDelay');
+        var resFare = document.getElementById('resFare');
+        var resBusRoutes = document.getElementById('resBusRoutes');
+        var resRouteNote = document.getElementById('resRouteNote');
+
+        if (resOffPeak) resOffPeak.textContent = data.offPeak;
+        if (resPeak) resPeak.textContent = data.peak;
+        if (resDelay) resDelay.textContent = data.delay;
+        if (resFare) resFare.textContent = data.fare;
+        if (resRouteNote) resRouteNote.textContent = data.note;
+
+        if (resBusRoutes) {
+            resBusRoutes.innerHTML = '';
+            data.routes.forEach(function(r) {
+                var badge = document.createElement('span');
+                badge.className = 'route-badge';
+                badge.textContent = r;
+                resBusRoutes.appendChild(badge);
+            });
+        }
+    }
+
+    calcBtn.addEventListener('click', updateCalculator);
+    originSelect.addEventListener('change', updateCalculator);
+    destSelect.addEventListener('change', updateCalculator);
+}
+
+// ---------------------------------------------------------------------
+// 3. Chalo App ETA vs. Ground Reality Accuracy Meter
+// ---------------------------------------------------------------------
+function initChaloAccuracyMeter() {
+    var stopSelect = document.getElementById('chaloStopSelect');
+    if (!stopSelect) return;
+
+    var accuracyData = {
+        "Malad Station": {
+            appEta: "6 Mins",
+            groundEta: "24 Mins",
+            badgeText: "⚠️ High Latency (+18 Mins traffic delay)",
+            variance: 75,
+            badgeClass: "warn",
+            desc: "App shows 6 mins but bus is held at SV Road signal. Bus GPS frequency drops due to high-rise building interference and narrow feeder lanes."
+        },
+        "Ismail Yusuf College": {
+            appEta: "8 Mins",
+            groundEta: "22 Mins",
+            badgeText: "⚠️ Moderate Latency (+14 Mins traffic delay)",
+            variance: 65,
+            badgeClass: "warn",
+            desc: "Buses get trapped at Jogeshwari WEH junction. App ETA timer freezes or increments while the bus is stationary in unmonitored signals."
+        },
+        "Goregaon Depot": {
+            appEta: "5 Mins",
+            groundEta: "9 Mins",
+            badgeText: "🟢 Low Latency / Accurate (+4 Mins delay)",
+            variance: 28,
+            badgeClass: "good",
+            desc: "Depot starters actively log departures, resulting in the highest tracking accuracy along the entire corridor with minimal signal loss."
+        },
+        "Jogeshwari Station": {
+            appEta: "7 Mins",
+            groundEta: "26 Mins",
+            badgeText: "🚨 Critical Latency (+19 Mins traffic delay)",
+            variance: 82,
+            badgeClass: "crit",
+            desc: "Encroachments and auto-rickshaw halting near east subway entrance cause unpredictable 20+ minute holding times not reflected in app algorithm."
+        }
+    };
+
+    function updateMeter() {
+        var selected = stopSelect.value;
+        var item = accuracyData[selected];
+        if (!item) return;
+
+        var appDisplay = document.getElementById('appEtaDisplay');
+        var groundDisplay = document.getElementById('groundEtaDisplay');
+        var statusBadge = document.getElementById('accuracyStatusBadge');
+        var varianceLabel = document.getElementById('accuracyVarianceLabel');
+        var progressBar = document.getElementById('latencyProgressBar');
+        var detailText = document.getElementById('accuracyDetailText');
+
+        if (appDisplay) appDisplay.textContent = item.appEta;
+        if (groundDisplay) groundDisplay.textContent = item.groundEta;
+        if (statusBadge) statusBadge.textContent = item.badgeText;
+        if (varianceLabel) varianceLabel.textContent = 'Variance: ' + item.variance + '%';
+        if (progressBar) progressBar.style.width = item.variance + '%';
+        if (detailText) detailText.textContent = item.desc;
+    }
+
+    stopSelect.addEventListener('change', updateMeter);
+}
+
+// ---------------------------------------------------------------------
+// 4. Bus Stop Accessibility Scorecard Widget
+// ---------------------------------------------------------------------
+function initAccessibilityScorecard() {
+    var tabs = document.querySelectorAll('.score-tab');
+    var container = document.getElementById('scorecardContent');
+    if (!tabs.length || !container) return;
+
+    var stopsData = {
+        "iy-college": {
+            title: "Ismail Yusuf College Stop",
+            amenities: [
+                { name: "Covered Shelter", available: true },
+                { name: "Digital ETA Route Board", available: false },
+                { name: "Wheelchair / Senior Ramp", available: false },
+                { name: "Night Lighting", available: true },
+                { name: "Seating Benches", available: true }
+            ],
+            score: "3.2 / 5.0",
+            stars: "★★★☆☆",
+            summary: "Dedicated student shelter exists with night lighting, but curb height is steep (14 inches) making wheelchair and elderly boarding perilous. No digital ETA board installed."
+        },
+        "malad-stn": {
+            title: "Malad Station (W) Stop",
+            amenities: [
+                { name: "Covered Shelter", available: true },
+                { name: "Digital ETA Route Board", available: false },
+                { name: "Wheelchair / Senior Ramp", available: false },
+                { name: "Night Lighting", available: true },
+                { name: "Seating Benches", available: false }
+            ],
+            score: "2.4 / 5.0",
+            stars: "★★☆☆☆",
+            summary: "Extreme pedestrian volume. Shelter roof is narrow; bench seating removed to accommodate queues. Lack of ramp creates severe boarding hazards during morning peak."
+        },
+        "goregaon-depot": {
+            title: "Goregaon Bus Depot",
+            amenities: [
+                { name: "Covered Shelter", available: true },
+                { name: "Digital ETA Route Board", available: true },
+                { name: "Wheelchair / Senior Ramp", available: true },
+                { name: "Night Lighting", available: true },
+                { name: "Seating Benches", available: true }
+            ],
+            score: "4.8 / 5.0",
+            stars: "★★★★★",
+            summary: "Highest standard infrastructure on corridor. Covered bays, tactile paving, wheelchair curb ramp, well-maintained benches, and functional schedule boards."
+        },
+        "jogeshwari-caves": {
+            title: "Jogeshwari Caves Road Junction",
+            amenities: [
+                { name: "Covered Shelter", available: false },
+                { name: "Digital ETA Route Board", available: false },
+                { name: "Wheelchair / Senior Ramp", available: false },
+                { name: "Night Lighting", available: true },
+                { name: "Seating Benches", available: false }
+            ],
+            score: "1.6 / 5.0",
+            stars: "★☆☆☆☆",
+            summary: "Deficient infrastructure. No passenger canopy or seats. Commuters and students stand under open sun/rain directly on the carriageway edge."
+        }
+    };
+
+    function renderScorecard(stopKey) {
+        var data = stopsData[stopKey];
+        if (!data) return;
+
+        var html = '<div class="amenities-grid">';
+        data.amenities.forEach(function(item) {
+            var tagClass = item.available ? 'status-tag yes' : 'status-tag no';
+            var tagText = item.available ? 'Yes 🟢' : 'No 🔴';
+            html += '<div class="amenity-card">' +
+                        '<span class="amenity-name">' + item.name + '</span>' +
+                        '<span class="' + tagClass + '">' + tagText + '</span>' +
+                    '</div>';
+        });
+        html += '</div>';
+
+        html += '<div class="score-summary-card">' +
+                    '<div class="score-rating-header">' +
+                        '<div class="score-rating-val">' +
+                            '<span>' + data.score + '</span>' +
+                            '<span class="score-stars">' + data.stars + '</span>' +
+                        '</div>' +
+                        '<span class="badge" style="background:rgba(255,255,255,0.1);color:#e2e8f0;">Field Verified Audit</span>' +
+                    '</div>' +
+                    '<p class="score-field-note"><strong>Field Summary:</strong> ' + data.summary + '</p>' +
+                '</div>';
+
+        container.innerHTML = html;
+    }
+
+    tabs.forEach(function(tab) {
+        tab.addEventListener('click', function() {
+            tabs.forEach(function(t) {
+                t.classList.remove('active');
+                t.setAttribute('aria-selected', 'false');
+            });
+            tab.classList.add('active');
+            tab.setAttribute('aria-selected', 'true');
+            var stopKey = tab.getAttribute('data-stop');
+            renderScorecard(stopKey);
+        });
+    });
+
+    // Initial render
+    renderScorecard('iy-college');
+}
+
+// ---------------------------------------------------------------------
+// 5. Peak-Hour Crowd Density Heatmap Slider
+// ---------------------------------------------------------------------
+function initCrowdDensitySlider() {
+    var slider = document.getElementById('crowdTimeSlider');
+    if (!slider) return;
+
+    var timeDisplay = document.getElementById('crowdTimeDisplay');
+    var phaseBadge = document.getElementById('crowdPhaseBadge');
+    var crowdPct = document.getElementById('crowdPercentage');
+    var meterFill = document.getElementById('crowdMeterFill');
+    var conditionHeadline = document.getElementById('crowdHeadline');
+    var conditionText = document.getElementById('crowdDescription');
+    var conditionBox = document.getElementById('crowdConditionBox');
+
+    function formatTime(val) {
+        var hour = Math.floor(val);
+        var minutes = (val % 1 !== 0) ? '30' : '00';
+        var period = (hour >= 12) ? 'PM' : 'AM';
+        var displayHour = hour;
+        if (displayHour > 12) displayHour -= 12;
+        if (displayHour === 0) displayHour = 12;
+        var paddedHour = (displayHour < 10 ? '0' : '') + displayHour;
+        return paddedHour + ':' + minutes + ' ' + period;
+    }
+
+    function getCrowdProfile(val) {
+        if (val < 7.5) {
+            return {
+                occupancy: 36,
+                badge: "Early Morning Start",
+                headline: "🟢 Low Passenger Volume & Ample Seating",
+                desc: formatTime(val) + ": Minimal commuter footfall. Buses departing Goregaon Depot have empty seats; boarding takes under 1 minute.",
+                color: "#22c55e",
+                badgeBg: "rgba(34, 197, 94, 0.2)",
+                badgeBorder: "rgba(34, 197, 94, 0.4)",
+                badgeColor: "#86efac"
+            };
+        } else if (val < 8.0) {
+            return {
+                occupancy: 62,
+                badge: "Early Student Influx",
+                headline: "🟡 Moderate Congestion Building",
+                desc: formatTime(val) + ": Junior college students begin arriving at IY College Stop. Standing room available; bus frequency running on schedule.",
+                color: "#eab308",
+                badgeBg: "rgba(234, 179, 8, 0.2)",
+                badgeBorder: "rgba(234, 179, 8, 0.4)",
+                badgeColor: "#fde047"
+            };
+        } else if (val <= 9.5) {
+            var pct = (val === 8.5) ? 94 : (val === 9.0 ? 96 : 86);
+            return {
+                occupancy: pct,
+                badge: "Peak Morning Rush (Crush Load)",
+                headline: "🚨 Extreme Congestion & Footboard Travel",
+                desc: formatTime(val) + ": Peak Morning Rush – Footboard travel observed, high student density near college stops. Boarding wait exceeds 25–30 minutes.",
+                color: "#ef4444",
+                badgeBg: "rgba(239, 68, 68, 0.2)",
+                badgeBorder: "rgba(239, 68, 68, 0.4)",
+                badgeColor: "#fca5a5"
+            };
+        } else if (val <= 11.0) {
+            return {
+                occupancy: 68,
+                badge: "Tapering Morning Rush",
+                headline: "🟡 Decreasing Crowds & Normalized Headways",
+                desc: formatTime(val) + ": Lectures underway; office commuters cleared. Bus boarding queues shrink to 10–12 minutes.",
+                color: "#eab308",
+                badgeBg: "rgba(234, 179, 8, 0.2)",
+                badgeBorder: "rgba(234, 179, 8, 0.4)",
+                badgeColor: "#fde047"
+            };
+        } else if (val <= 12.5) {
+            return {
+                occupancy: 42,
+                badge: "Midday Off-Peak",
+                headline: "🟢 Free Flow & Comfortable Boarding",
+                desc: formatTime(val) + ": Midday corridor operations run smoothly. Seat availability on Routes 202 and 203 exceeds 40%.",
+                color: "#22c55e",
+                badgeBg: "rgba(34, 197, 94, 0.2)",
+                badgeBorder: "rgba(34, 197, 94, 0.4)",
+                badgeColor: "#86efac"
+            };
+        } else if (val <= 14.5) {
+            return {
+                occupancy: 66,
+                badge: "Afternoon Shift Dismissal",
+                headline: "🟡 Student Departure Surge",
+                desc: formatTime(val) + ": Degree and junior college lectures dismiss. Moderate crowd surge at Ismail Yusuf College stop with fast turnaround.",
+                color: "#eab308",
+                badgeBg: "rgba(234, 179, 8, 0.2)",
+                badgeBorder: "rgba(234, 179, 8, 0.4)",
+                badgeColor: "#fde047"
+            };
+        } else if (val <= 16.5) {
+            return {
+                occupancy: 48,
+                badge: "Afternoon Lull",
+                headline: "🟢 Light Traffic & On-Time Performance",
+                desc: formatTime(val) + ": Smooth transit along SV Road. Minimal delay (+4 mins) between Malad Station and Jogeshwari.",
+                color: "#22c55e",
+                badgeBg: "rgba(34, 197, 94, 0.2)",
+                badgeBorder: "rgba(34, 197, 94, 0.4)",
+                badgeColor: "#86efac"
+            };
+        } else if (val <= 19.5) {
+            return {
+                occupancy: 92,
+                badge: "Peak Evening Rush",
+                headline: "🚨 Evening Crush Load & Gridlock",
+                desc: formatTime(val) + ": Peak Evening Commute – Dense passenger volume heading westward. Severe bottlenecks at Mith Chowki and Link Road; 35+ minute delays.",
+                color: "#ef4444",
+                badgeBg: "rgba(239, 68, 68, 0.2)",
+                badgeBorder: "rgba(239, 68, 68, 0.4)",
+                badgeColor: "#fca5a5"
+            };
+        } else {
+            return {
+                occupancy: 60,
+                badge: "Late Evening Dissipation",
+                headline: "🟡 Tapering Night Volume",
+                desc: formatTime(val) + ": Evening rush winds down; normal transit intervals restored with light congestion near railway station gates.",
+                color: "#eab308",
+                badgeBg: "rgba(234, 179, 8, 0.2)",
+                badgeBorder: "rgba(234, 179, 8, 0.4)",
+                badgeColor: "#fde047"
+            };
+        }
+    }
+
+    function updateSlider() {
+        var val = parseFloat(slider.value);
+        var timeStr = formatTime(val);
+        var profile = getCrowdProfile(val);
+
+        if (timeDisplay) timeDisplay.textContent = timeStr;
+        if (phaseBadge) {
+            phaseBadge.textContent = profile.badge;
+            phaseBadge.style.backgroundColor = profile.badgeBg;
+            phaseBadge.style.borderColor = profile.badgeBorder;
+            phaseBadge.style.color = profile.badgeColor;
+        }
+        if (crowdPct) {
+            var labelType = profile.occupancy > 75 ? ' (Crush Load)' : (profile.occupancy >= 50 ? ' (Moderate)' : ' (Low)');
+            crowdPct.textContent = profile.occupancy + '%' + labelType;
+            crowdPct.style.color = profile.color;
+        }
+        if (meterFill) {
+            meterFill.style.width = profile.occupancy + '%';
+        }
+        if (conditionHeadline) conditionHeadline.textContent = profile.headline;
+        if (conditionText) conditionText.textContent = profile.desc;
+        if (conditionBox) conditionBox.style.borderLeftColor = profile.color;
+    }
+
+    slider.addEventListener('input', updateSlider);
+}
+
+// ---------------------------------------------------------------------
+// 6. Public Commuter Issue Reporting & Community Feed
+// ---------------------------------------------------------------------
+function initCommuterReportingFeed() {
+    var form = document.getElementById('commuterReportForm');
+    var feedContainer = document.getElementById('communityFeedContainer');
+    var countBadge = document.getElementById('reportCountBadge');
+    var toast = document.getElementById('reportToast');
+
+    if (!feedContainer) return;
+
+    var reports = [
+        {
+            name: "Aakash Verma (TY CS Student)",
+            route: "Route 202",
+            stop: "Ismail Yusuf College Stop",
+            issue: "Overcrowding",
+            comment: "Bus skipped the stop entirely at 8:40 AM because it was packed beyond capacity. Had to wait 25 mins for the next 203.",
+            time: "15 mins ago"
+        },
+        {
+            name: "Priya Nair (Daily Commuter)",
+            route: "Route 203",
+            stop: "Mith Chowki Junction",
+            issue: "App Tracking Fail",
+            comment: "Chalo app indicated 4 mins arrival, but GPS stopped moving for 18 minutes near flyover construction.",
+            time: "42 mins ago"
+        },
+        {
+            name: "Suresh Kadam (Senior Citizen)",
+            route: "Route 459",
+            stop: "Goregaon Bus Depot",
+            issue: "Boarding Hazard",
+            comment: "High floor step makes it extremely difficult for senior citizens to climb without a platform ramp.",
+            time: "1 hour ago"
+        },
+        {
+            name: "Neha Gupta (Student)",
+            route: "Route 345",
+            stop: "Jogeshwari Caves Road Junction",
+            issue: "Broken Shelter",
+            comment: "No shelter or shade during heavy rain; commuters forced to stand on the muddy road edge.",
+            time: "2 hours ago"
+        }
+    ];
+
+    function renderFeed() {
+        feedContainer.innerHTML = '';
+        reports.forEach(function(r) {
+            var item = document.createElement('div');
+            item.className = 'feed-report-item';
+            item.innerHTML =
+                '<div class="report-meta">' +
+                    '<span class="report-author">' + r.name + '</span>' +
+                    '<span class="report-time">' + r.time + '</span>' +
+                '</div>' +
+                '<div class="report-tags">' +
+                    '<span class="report-tag-route">' + r.route + '</span>' +
+                    '<span class="report-tag-stop">' + r.stop + '</span>' +
+                    '<span class="report-tag-issue">' + r.issue + '</span>' +
+                '</div>' +
+                '<p class="report-comment">"' + r.comment + '"</p>';
+            feedContainer.appendChild(item);
+        });
+
+        if (countBadge) {
+            countBadge.textContent = reports.length + ' Reports Active';
+        }
+    }
+
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            var nameInput = document.getElementById('repName');
+            var routeInput = document.getElementById('repRoute');
+            var stopInput = document.getElementById('repStop');
+            var issueInput = document.getElementById('repIssue');
+            var commentInput = document.getElementById('repComment');
+
+            if (!nameInput || !routeInput || !stopInput || !issueInput || !commentInput) return;
+
+            var newReport = {
+                name: nameInput.value.trim(),
+                route: routeInput.value,
+                stop: stopInput.value,
+                issue: issueInput.value,
+                comment: commentInput.value.trim(),
+                time: "Just now"
+            };
+
+            reports.unshift(newReport);
+            renderFeed();
+
+            form.reset();
+
+            if (toast) {
+                toast.style.display = 'block';
+                setTimeout(function() {
+                    toast.style.display = 'none';
+                }, 3500);
+            }
+        });
+    }
+
+    renderFeed();
+}
+

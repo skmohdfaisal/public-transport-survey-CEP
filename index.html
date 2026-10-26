@@ -22,6 +22,7 @@
                 <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
             </button>
             <ul class="nav-links" id="nav-links">
+                <li><a href="#interactive-transit-hub">Transit Tools</a></li>
                 <li><a href="#overview">Overview</a></li>
                 <li><a href="#methodology">Methodology</a></li>
                 <li><a href="#depot-workflow">Depot Workflow</a></li>
@@ -56,11 +57,348 @@
             </div>
 
             <div class="hero-actions">
-                <a href="#field-data" class="btn btn-primary">Explore Field Data</a>
-                <a href="#dashboard-concept" class="btn btn-secondary">View Dashboard Prototype</a>
+                <a href="#interactive-transit-hub" class="btn btn-primary">⚡ Explore Interactive Transit Tools</a>
+                <a href="#field-data" class="btn btn-secondary">Explore Field Data</a>
+                <a href="#dashboard-concept" class="btn btn-secondary">Dashboard Prototype</a>
             </div>
         </div>
     </header>
+
+    <!-- 1. LIVE CORRIDOR ALERT TICKER BAR -->
+    <div class="alert-ticker-container" role="region" aria-label="Live Corridor Alerts Ticker">
+        <div class="ticker-badge">
+            <span class="pulse-indicator"></span>
+            <span class="ticker-badge-text">LIVE ALERTS</span>
+        </div>
+        <div class="ticker-track-wrapper">
+            <div class="ticker-track" id="corridorTickerTrack">
+                <span class="ticker-item">🚨 <strong>BEST Route 202:</strong> Heavy congestion at SV Road Mith Chowki (+18 mins delay)</span>
+                <span class="ticker-item">🟢 <strong>BEST Route 203:</strong> Normal Service along Link Road Corridor</span>
+                <span class="ticker-item">⚡ <strong>Peak-Hour Crowd Level:</strong> High (88% Bus Occupancy across Malad-Jogeshwari Line)</span>
+                <span class="ticker-item">ℹ️ <strong>Chalo Pass Integration:</strong> Digital student validation active at IY College Stop</span>
+                <!-- Duplicate set for seamless continuous marquee loop -->
+                <span class="ticker-item">🚨 <strong>BEST Route 202:</strong> Heavy congestion at SV Road Mith Chowki (+18 mins delay)</span>
+                <span class="ticker-item">🟢 <strong>BEST Route 203:</strong> Normal Service along Link Road Corridor</span>
+                <span class="ticker-item">⚡ <strong>Peak-Hour Crowd Level:</strong> High (88% Bus Occupancy across Malad-Jogeshwari Line)</span>
+                <span class="ticker-item">ℹ️ <strong>Chalo Pass Integration:</strong> Digital student validation active at IY College Stop</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 6 INTERACTIVE PUBLIC-TRANSPORT FEATURES SECTION -->
+    <section id="interactive-transit-hub" class="transit-hub-section">
+        <div class="container">
+            <div class="hub-header">
+                <div class="hub-pill">Interactive Field Analytics & Tools</div>
+                <h2 class="hub-title">Malad–Jogeshwari Corridor Operations Hub</h2>
+                <p class="hub-desc">Empirical telemetry models, live delay and fare calculators, real-time app latency audits, and public commuter feedback compiled from our TY B.Sc. CS field survey.</p>
+            </div>
+
+            <!-- Features Grid -->
+            <div class="transit-tools-grid">
+
+                <!-- 2. INTERACTIVE ROUTE, FARE & PEAK-HOUR DELAY CALCULATOR -->
+                <div class="transit-card calculator-card">
+                    <div class="card-header">
+                        <div class="card-icon-badge">⚡</div>
+                        <div>
+                            <h3 class="card-title">Route, Fare & Peak-Hour Delay Calculator</h3>
+                            <p class="card-subtitle">Estimate travel duration variance and ticket fares across corridor segments</p>
+                        </div>
+                    </div>
+                    
+                    <form id="routeCalculatorForm" class="hub-form" onsubmit="return false;">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="originSelect" class="hub-label">Origin Stop</label>
+                                <select id="originSelect" class="hub-select">
+                                    <option value="Malad Station (W)">Malad Station (W)</option>
+                                    <option value="Mith Chowki">Mith Chowki</option>
+                                    <option value="Goregaon Bus Depot">Goregaon Bus Depot</option>
+                                    <option value="Oshiwara">Oshiwara</option>
+                                    <option value="Jogeshwari (E)">Jogeshwari (E)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="destSelect" class="hub-label">Destination Stop</label>
+                                <select id="destSelect" class="hub-select">
+                                    <option value="Ismail Yusuf College" selected>Ismail Yusuf College</option>
+                                    <option value="Jogeshwari Station">Jogeshwari Station</option>
+                                    <option value="Andheri Station">Andheri Station</option>
+                                    <option value="Mindspace Malad">Mindspace Malad</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <button type="button" id="calcRouteBtn" class="hub-action-btn">
+                            <span class="btn-text">Calculate Route & Delay</span>
+                            <span class="btn-icon">➔</span>
+                        </button>
+                    </form>
+
+                    <!-- Dynamic Output Box -->
+                    <div id="calcResultBox" class="calc-results-panel">
+                        <div class="results-stats-grid">
+                            <div class="stat-pill stat-offpeak">
+                                <span class="stat-lbl">Off-Peak Travel</span>
+                                <span class="stat-val highlight-green" id="resOffPeak">16 mins</span>
+                            </div>
+                            <div class="stat-pill stat-peak">
+                                <span class="stat-lbl">Peak-Hour Travel</span>
+                                <span class="stat-val highlight-red" id="resPeak">42 mins</span>
+                            </div>
+                            <div class="stat-pill stat-delay">
+                                <span class="stat-lbl">Traffic Delay Impact</span>
+                                <span class="stat-val highlight-orange" id="resDelay">+26 mins</span>
+                            </div>
+                            <div class="stat-pill stat-fare">
+                                <span class="stat-lbl">BEST Ticket Fare</span>
+                                <span class="stat-val highlight-blue" id="resFare">₹6 (Non-AC) / ₹10 (AC)</span>
+                            </div>
+                        </div>
+
+                        <div class="recommended-routes-row">
+                            <span class="route-label">Recommended Bus Numbers:</span>
+                            <div id="resBusRoutes" class="route-badges-container">
+                                <span class="route-badge">Route 202</span>
+                                <span class="route-badge">Route 203</span>
+                                <span class="route-badge">Route 459</span>
+                            </div>
+                        </div>
+
+                        <div class="corridor-note" id="resRouteNote">
+                            📍 Bottlenecks at SV Road Mith Chowki & Jogeshwari West flyover during 8:00–10:30 AM college rush.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. CHALO APP ETA VS. GROUND REALITY ACCURACY METER -->
+                <div class="transit-card accuracy-card">
+                    <div class="card-header">
+                        <div class="card-icon-badge">📱</div>
+                        <div>
+                            <h3 class="card-title">Chalo App ETA vs. Ground Reality Meter</h3>
+                            <p class="card-subtitle">Side-by-side gap audit of mobile tracking predictions against field stopwatch data</p>
+                        </div>
+                    </div>
+
+                    <div class="stop-select-wrapper">
+                        <label for="chaloStopSelect" class="hub-label">Select Corridor Bus Stop:</label>
+                        <select id="chaloStopSelect" class="hub-select">
+                            <option value="Malad Station">Malad Station</option>
+                            <option value="Ismail Yusuf College" selected>Ismail Yusuf College</option>
+                            <option value="Goregaon Depot">Goregaon Depot</option>
+                            <option value="Jogeshwari Station">Jogeshwari Station</option>
+                        </select>
+                    </div>
+
+                    <div class="eta-comparison-grid">
+                        <div class="eta-box app-eta">
+                            <div class="eta-box-header">
+                                <span class="badge-source digital">📱 Digital App ETA</span>
+                            </div>
+                            <div class="eta-time" id="appEtaDisplay">8 Mins</div>
+                            <div class="eta-caption">Predicted arrival on Chalo live app</div>
+                        </div>
+
+                        <div class="eta-vs-circle">VS</div>
+
+                        <div class="eta-box ground-eta">
+                            <div class="eta-box-header">
+                                <span class="badge-source ground">⏱️ Ground Reality</span>
+                            </div>
+                            <div class="eta-time" id="groundEtaDisplay">22 Mins</div>
+                            <div class="eta-caption">Actual arrival observed by field team</div>
+                        </div>
+                    </div>
+
+                    <div class="accuracy-status-container">
+                        <div class="accuracy-badge" id="accuracyStatusBadge">
+                            ⚠️ Moderate Latency (+14 Mins traffic delay)
+                        </div>
+                        <div class="latency-meter-wrapper">
+                            <div class="latency-meter-labels">
+                                <span>Signal Accuracy</span>
+                                <span id="accuracyVarianceLabel">Variance: 65%</span>
+                            </div>
+                            <div class="latency-meter-bar">
+                                <div class="latency-bar-fill" id="latencyProgressBar" style="width: 65%;"></div>
+                            </div>
+                        </div>
+                        <p class="accuracy-desc" id="accuracyDetailText">
+                            Buses get trapped at Jogeshwari WEH junction. App ETA timer freezes or increments while the bus is stationary in unmonitored signals.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- 4. BUS STOP ACCESSIBILITY SCORECARD WIDGET -->
+                <div class="transit-card scorecard-card">
+                    <div class="card-header">
+                        <div class="card-icon-badge">♿</div>
+                        <div>
+                            <h3 class="card-title">Bus Stop Accessibility Scorecard</h3>
+                            <p class="card-subtitle">Field-audited commuter infrastructure, PwD ramps, shelter & lighting</p>
+                        </div>
+                    </div>
+
+                    <!-- Tab buttons -->
+                    <div class="scorecard-tabs" role="tablist">
+                        <button type="button" class="score-tab active" data-stop="iy-college" role="tab" aria-selected="true">Ismail Yusuf College</button>
+                        <button type="button" class="score-tab" data-stop="malad-stn" role="tab" aria-selected="false">Malad Station (W)</button>
+                        <button type="button" class="score-tab" data-stop="goregaon-depot" role="tab" aria-selected="false">Goregaon Depot</button>
+                        <button type="button" class="score-tab" data-stop="jogeshwari-caves" role="tab" aria-selected="false">Jogeshwari Caves Rd</button>
+                    </div>
+
+                    <div class="scorecard-body" id="scorecardContent">
+                        <!-- Populated dynamically via JS -->
+                    </div>
+                </div>
+
+                <!-- 5. PEAK-HOUR CROWD DENSITY HEATMAP SLIDER -->
+                <div class="transit-card heatmap-card">
+                    <div class="card-header">
+                        <div class="card-icon-badge">👥</div>
+                        <div>
+                            <h3 class="card-title">Peak-Hour Crowd Density Heatmap Slider</h3>
+                            <p class="card-subtitle">Move the time slider to inspect corridor crowd surge and occupancy patterns</p>
+                        </div>
+                    </div>
+
+                    <div class="slider-control-box">
+                        <div class="slider-time-display">
+                            <div class="time-meta">
+                                <span class="time-label">Corridor Time:</span>
+                                <span class="time-value" id="crowdTimeDisplay">08:30 AM</span>
+                            </div>
+                            <span class="crowd-phase-badge" id="crowdPhaseBadge">Peak Morning Rush</span>
+                        </div>
+
+                        <div class="range-container">
+                            <input type="range" id="crowdTimeSlider" min="7" max="20" step="0.5" value="8.5" class="crowd-slider" aria-label="Select corridor time">
+                        </div>
+
+                        <div class="slider-ticks">
+                            <span>07:00 AM</span>
+                            <span>10:00 AM</span>
+                            <span>01:00 PM</span>
+                            <span>04:00 PM</span>
+                            <span>08:00 PM</span>
+                        </div>
+                    </div>
+
+                    <div class="crowd-meter-wrapper">
+                        <div class="meter-header">
+                            <span>Corridor Bus Occupancy</span>
+                            <span id="crowdPercentage" class="crowd-pct">94% (Crush Load)</span>
+                        </div>
+                        <div class="meter-track">
+                            <div class="meter-fill" id="crowdMeterFill" style="width: 94%;"></div>
+                        </div>
+                        <div class="meter-labels">
+                            <span class="meter-lbl-low">🟢 Low (&lt;50%)</span>
+                            <span class="meter-lbl-mod">🟡 Moderate (50–75%)</span>
+                            <span class="meter-lbl-high">🔴 High / Crush Load (&gt;75%)</span>
+                        </div>
+                    </div>
+
+                    <div class="crowd-condition-box" id="crowdConditionBox">
+                        <div class="condition-headline" id="crowdHeadline">🚨 Extreme Congestion & Footboard Boarding</div>
+                        <p class="condition-text" id="crowdDescription">
+                            08:30 AM: Peak Morning Rush – Footboard travel observed, high student density near college stops. Boarding wait exceeds 25-30 minutes.
+                        </p>
+                    </div>
+                </div>
+
+            </div> <!-- End tools grid -->
+
+            <!-- 6. PUBLIC COMMUTER ISSUE REPORTING & FEEDBACK FORM -->
+            <div class="transit-card feedback-reporting-card">
+                <div class="card-header">
+                    <div class="card-icon-badge">📢</div>
+                    <div>
+                        <h3 class="card-title">Public Commuter Issue Reporting & Community Feed</h3>
+                        <p class="card-subtitle">Empowering daily passengers and college students to log transit delays and hazards directly into our field log</p>
+                    </div>
+                </div>
+
+                <div class="feedback-grid">
+                    <!-- Form Side -->
+                    <div class="feedback-form-pane">
+                        <form id="commuterReportForm" class="hub-form">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="repName" class="hub-label">Commuter Name</label>
+                                    <input type="text" id="repName" class="hub-input" placeholder="e.g. Rahul Sharma (Student)" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="repRoute" class="hub-label">Bus Route No</label>
+                                    <select id="repRoute" class="hub-select" required>
+                                        <option value="Route 202">Route 202 (Malad to IY College / Andheri)</option>
+                                        <option value="Route 203">Route 203 (Dahisar to Juhu / Jogeshwari)</option>
+                                        <option value="Route 459">Route 459 (Mulund to Malad Depot)</option>
+                                        <option value="Route 345">Route 345 (Goregaon to Santacruz)</option>
+                                        <option value="Route C-10">Route C-10 Express</option>
+                                        <option value="Other Feeder">Other / Feeder Route</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="repStop" class="hub-label">Bus Stop Location</label>
+                                    <select id="repStop" class="hub-select" required>
+                                        <option value="Ismail Yusuf College Stop">Ismail Yusuf College Stop</option>
+                                        <option value="Malad Station (W)">Malad Station (W)</option>
+                                        <option value="Mith Chowki Junction">Mith Chowki Junction</option>
+                                        <option value="Goregaon Bus Depot">Goregaon Bus Depot</option>
+                                        <option value="Jogeshwari Caves Road Junction">Jogeshwari Caves Road Junction</option>
+                                        <option value="Oshiwara Link Road">Oshiwara Link Road</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="repIssue" class="hub-label">Issue Type</label>
+                                    <select id="repIssue" class="hub-select" required>
+                                        <option value="Overcrowding">Overcrowding / Footboard Travel</option>
+                                        <option value="Bus Didn't Stop">Bus Didn't Stop / Skipped Stop</option>
+                                        <option value="App Tracking Fail">Chalo App Tracking Fail / Frozen ETA</option>
+                                        <option value="Broken Shelter">Broken Shelter / No Rain Cover</option>
+                                        <option value="Boarding Hazard">Boarding Hazard / High Step / No Ramp</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="repComment" class="hub-label">Comments & Field Observations</label>
+                                <textarea id="repComment" class="hub-textarea" rows="3" placeholder="Describe delay duration, conductor behavior, student safety concerns, or digital pass issues..." required></textarea>
+                            </div>
+
+                            <button type="submit" class="hub-action-btn submit-btn">
+                                <span class="btn-text">Submit Report to Community Feed</span>
+                                <span class="btn-icon">➔</span>
+                            </button>
+                        </form>
+
+                        <div id="reportToast" class="hub-toast">✓ Report successfully recorded and broadcast to community feed!</div>
+                    </div>
+
+                    <!-- Live Feed Side -->
+                    <div class="feedback-feed-pane">
+                        <div class="feed-header">
+                            <div>
+                                <h4 class="feed-title">Live Community Reports Feed</h4>
+                                <span class="feed-sub">Real-time issues verified by student volunteers</span>
+                            </div>
+                            <span class="live-count-badge" id="reportCountBadge">4 Reports Active</span>
+                        </div>
+                        <div class="feed-scroll-container" id="communityFeedContainer">
+                            <!-- Populated with seed reports + user submissions via JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
 
     <!-- Executive Overview -->
     <section id="overview" class="container section">
