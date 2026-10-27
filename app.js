@@ -71,7 +71,360 @@ document.addEventListener('DOMContentLoaded', function() {
     if (document.getElementById('interactive-transit-hub')) {
         initInteractiveTransitHub();
     }
+
+    // 6. Multi-View Router & Modal Initializations (Issue 2)
+    initViewRouter();
+    initDetailModalEvents();
 });
+
+
+// =====================================================================
+// INTERACTIVE MULTI-VIEW ROUTER & NAVIGATION SYSTEM (Issue 2)
+// =====================================================================
+
+var viewOrder = [
+    'view-dashboard',
+    'view-methodology',
+    'view-depot',
+    'view-analytics',
+    'view-gallery'
+];
+
+function switchView(viewId, shouldScroll) {
+    if (typeof shouldScroll === 'undefined') shouldScroll = true;
+
+    // Validate view ID
+    if (!document.getElementById(viewId)) {
+        console.warn('View ID not found:', viewId);
+        return;
+    }
+
+    // 1. Update View Panels
+    var panels = document.querySelectorAll('.corridor-view-panel');
+    panels.forEach(function(panel) {
+        if (panel.id === viewId) {
+            panel.classList.add('active');
+            panel.setAttribute('aria-hidden', 'false');
+        } else {
+            panel.classList.remove('active');
+            panel.setAttribute('aria-hidden', 'true');
+        }
+    });
+
+    // 2. Update Top View Switcher Buttons
+    var switcherBtns = document.querySelectorAll('.view-tab-btn');
+    switcherBtns.forEach(function(btn) {
+        if (btn.getAttribute('data-view') === viewId) {
+            btn.classList.add('active');
+            btn.setAttribute('aria-selected', 'true');
+        } else {
+            btn.classList.remove('active');
+            btn.setAttribute('aria-selected', 'false');
+        }
+    });
+
+    // 3. Update Navbar Links
+    var navLinks = document.querySelectorAll('.nav-view-link');
+    navLinks.forEach(function(link) {
+        if (link.getAttribute('data-view-target') === viewId) {
+            link.classList.add('active');
+        } else {
+            link.classList.remove('active');
+        }
+    });
+
+    // 4. Update URL hash without breaking state
+    if (history.replaceState) {
+        history.replaceState(null, null, '#' + viewId);
+    }
+
+    // 5. Scroll smoothly to top of the switcher if requested
+    if (shouldScroll) {
+        var switcher = document.getElementById('corridorViewSwitcher');
+        if (switcher) {
+            switcher.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    }
+
+    // 6. If charts view is activated, trigger resize for Chart.js canvases
+    if (viewId === 'view-analytics' && window.categoryChartInstance) {
+        setTimeout(function() {
+            if (window.categoryChartInstance && window.categoryChartInstance.resize) window.categoryChartInstance.resize();
+            if (window.waitTimeChartInstance && window.waitTimeChartInstance.resize) window.waitTimeChartInstance.resize();
+            if (window.issuesChartInstance && window.issuesChartInstance.resize) window.issuesChartInstance.resize();
+        }, 150);
+    }
+}
+
+function initViewRouter() {
+    // Top tab switcher buttons
+    var switcherBtns = document.querySelectorAll('.view-tab-btn');
+    switcherBtns.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            var targetView = this.getAttribute('data-view');
+            switchView(targetView, true);
+        });
+    });
+
+    // Navbar view links
+    var navViewLinks = document.querySelectorAll('.nav-view-link');
+    navViewLinks.forEach(function(link) {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            var targetView = this.getAttribute('data-view-target');
+            switchView(targetView, true);
+        });
+    });
+
+    // Bottom Prev / Next navigation buttons
+    var nextBtns = document.querySelectorAll('.next-view-btn, .prev-view-btn');
+    nextBtns.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            var targetView = this.getAttribute('data-target-view');
+            switchView(targetView, true);
+        });
+    });
+
+    // Hero action buttons routing
+    var heroActions = document.querySelectorAll('.hero-actions a');
+    heroActions.forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+            var href = this.getAttribute('href');
+            if (href === '#interactive-transit-hub') {
+                e.preventDefault();
+                switchView('view-dashboard', true);
+            } else if (href === '#field-data') {
+                e.preventDefault();
+                switchView('view-analytics', true);
+            } else if (href === '#dashboard-concept') {
+                e.preventDefault();
+                switchView('view-analytics', true);
+            }
+        });
+    });
+
+    // Check URL hash on page load (e.g. #view-depot)
+    var initialHash = window.location.hash.replace('#', '');
+    if (viewOrder.indexOf(initialHash) !== -1) {
+        switchView(initialHash, false);
+    } else if (initialHash === 'interactive-transit-hub') {
+        switchView('view-dashboard', false);
+    } else if (initialHash === 'overview' || initialHash === 'methodology') {
+        switchView('view-methodology', false);
+    } else if (initialHash === 'depot-workflow') {
+        switchView('view-depot', false);
+    } else if (initialHash === 'field-data' || initialHash === 'commuter-journey' || initialHash === 'dashboard-concept') {
+        switchView('view-analytics', false);
+    } else if (initialHash === 'gallery' || initialHash === 'official-docs' || initialHash === 'recommendations') {
+        switchView('view-gallery', false);
+    }
+}
+
+// =====================================================================
+// GLASSMORPHIC DETAIL MODAL SYSTEM (Issue 2 - Details Popup)
+// =====================================================================
+
+var modalData = {
+    // Majas Depot Operational Steps
+    'depot-1': {
+        tag: 'OPERATIONAL STEP 1 / 5',
+        title: '🔧 Pre-Trip Mechanical & Safety Inspection',
+        body: `
+            <p>Every morning between 04:30 AM and 06:30 AM, buses parked overnight at Majas Bus Depot undergo thorough pre-service validation by BEST engineering staff before entering passenger service.</p>
+            <h4>📋 Mandatory Safety Checklist:</h4>
+            <ul>
+                <li><strong>Braking & Pneumatics:</strong> Air pressure test (minimum 8.5 bar operating threshold) and dual-circuit brake pad wear audit.</li>
+                <li><strong>Electrical & Telemetry:</strong> Vehicle Telemetry Unit (VTU) ping to BEST Central Control Room, internal LED saloon lighting, and digital LED route board display test.</li>
+                <li><strong>Fuel & Battery State of Charge:</strong> Fuel verification (or EV battery state >90% for Olectra electric buses).</li>
+                <li><strong>Emergency Preparedness:</strong> Fire suppression bottle pressure check, emergency window hammer presence, and passenger door auto-reverse sensors.</li>
+            </ul>
+            <div class="modal-highlight-card">
+                <strong>💡 Field Finding:</strong> Out of 14 buses observed during our morning audit, 2 were temporarily held back for minor pneumatic hose leakages, preventing on-route breakdowns.
+            </div>
+        `
+    },
+    'depot-2': {
+        tag: 'OPERATIONAL STEP 2 / 5',
+        title: '👨‍✈️ Driver & Conductor Roster Duty Allocation',
+        body: `
+            <p>Supervisors and Time-Keepers manage crew assignment rosters across three staggered shifts at the Majas Depot dispatch counter.</p>
+            <h4>Duty Allocation Protocols:</h4>
+            <ul>
+                <li><strong>Sobriety & Fitness Test:</strong> Mandatory digital breathalyzer screening for every driver prior to key collection.</li>
+                <li><strong>Chalo ETM Machine Issuance:</strong> Conductors receive synchronized Electronic Ticketing Machines (ETMs) pre-loaded with line fare tables and QR validation keys.</li>
+                <li><strong>Duty Roster Card:</strong> Handover of the physical trip sheet specifying scheduled departure times, meal break windows, and corridor terminus points.</li>
+            </ul>
+            <div class="modal-highlight-card">
+                <strong>⏰ Operational Insight:</strong> Conductor reporting latency averages 8 minutes before scheduled departure; spare reserve crew are kept on standby for peak morning rush replacements.
+            </div>
+        `
+    },
+    'depot-3': {
+        tag: 'OPERATIONAL STEP 3 / 5',
+        title: '📋 Starter Clearance & Corridor Briefing',
+        body: `
+            <p>The Depot Starter serves as the crucial gatekeeper between depot yard staging and live Mumbai street operations.</p>
+            <h4>Dispatch Checklist:</h4>
+            <ul>
+                <li><strong>Logbook Time Stamping:</strong> Starter stamps the physical and digital logbook with precise wheel-roll timestamp.</li>
+                <li><strong>Real-Time Traffic Advisory:</strong> Starter notifies drivers of known SV Road or Western Express Highway bottlenecks (e.g., Mith Chowki flyover choke points).</li>
+                <li><strong>Frequency Headway Adjustment:</strong> Starters adjust headway spacing from 12 minutes to 7 minutes during 07:30–10:00 AM student surge.</li>
+            </ul>
+            <div class="modal-highlight-card">
+                <strong>📍 Field Note:</strong> Buses departing Majas Depot toward Malad Station face an immediate 6–9 minute merge queue turning onto the main Jogeshwari-Vikhroli Link Road.
+            </div>
+        `
+    },
+    'depot-4': {
+        tag: 'OPERATIONAL STEP 4 / 5',
+        title: '🚍 Active Line Service & Commuter Boarding',
+        body: `
+            <p>The bus navigates the active Malad–Jogeshwari corridor picking up students, daily office workers, and senior citizens across designated stops.</p>
+            <h4>Live Operations & Realities:</h4>
+            <ul>
+                <li><strong>Dwell Times:</strong> Stop dwell times surge from 30 seconds off-peak to 2 minutes 45 seconds at college stops due to passenger crush load.</li>
+                <li><strong>Chalo Digital Pass Validation:</strong> Conductors scan student smart passes; cash ticket transactions account for ~48% of boarding latency.</li>
+                <li><strong>Telemetry Broadcast:</strong> VTU broadcasts GPS coordinates every 10 seconds to the Chalo backend server for commuter ETA calculations.</li>
+            </ul>
+            <div class="modal-highlight-card alert-card">
+                <strong>⚠️ Primary Bottleneck:</strong> Lack of dedicated bus lanes on SV Road forces buses to share single carriage lanes with auto-rickshaws and delivery scooters.
+            </div>
+        `
+    },
+    'depot-5': {
+        tag: 'OPERATIONAL STEP 5 / 5',
+        title: '🏢 Shift Completion, Cash Settlement & Depot Staging',
+        body: `
+            <p>Following the final scheduled trip, the vehicle returns to Majas Depot for end-of-day administrative and technical wrap-up.</p>
+            <h4>End-of-Shift Procedures:</h4>
+            <ul>
+                <li><strong>ETM Cash Remittance:</strong> Conductors submit ticketing machines and deposit collected cash revenue at the depot treasury window with automated counting machines.</li>
+                <li><strong>Defect Log Submission:</strong> Drivers submit mechanical defect slips (e.g., suspension rattles, wiper wear, AC cooling efficiency notes).</li>
+                <li><strong>Automated Bus Wash:</strong> Nightly drive-through washing bay cleaning followed by bay parking for morning rotation.</li>
+            </ul>
+            <div class="modal-highlight-card">
+                <strong>📊 Survey Data Correlation:</strong> Faster cash reconciliation through 100% digital Chalo ticketing could save an estimated 22 minutes per conductor daily.
+            </div>
+        `
+    },
+
+    // Commuter Journey Stages
+    'journey-1': {
+        tag: 'COMMUTER JOURNEY STAGE 1 / 4',
+        title: '🚶‍♂️ Stage 1: Walk to Bus Shelter',
+        body: `
+            <p>Students and daily passengers navigate the pedestrian environment to reach primary corridor stops such as Malad Liberty Garden or Ismail Yusuf College.</p>
+            <h4>Pedestrian Hurdles Documented:</h4>
+            <ul>
+                <li><strong>Footpath Encroachment:</strong> Hawkers and illegal bike parking occupy 40% of pavement width along SV Road.</li>
+                <li><strong>Monsoon Puddling:</strong> Uneven curb paving creates waterlogged walkways during Mumbai rains.</li>
+                <li><strong>Accessibility Gaps:</strong> Near total absence of tactile paving or low curb cuts for senior citizens and differently-abled students.</li>
+            </ul>
+            <div class="modal-highlight-card">
+                <strong>📈 Survey Finding:</strong> 38% of surveyed students walk between 8 and 15 minutes simply to reach a functional BEST stop.
+            </div>
+        `
+    },
+    'journey-2': {
+        tag: 'COMMUTER JOURNEY STAGE 2 / 4',
+        title: '⏳ Stage 2: Waiting at the Shelter',
+        body: `
+            <p>Commuters experience the psychological and physical stress of waiting under Mumbai heat and humidity with unpredictable arrival schedules.</p>
+            <h4>Field Observations:</h4>
+            <ul>
+                <li><strong>Average Wait Times:</strong> Peak-hour wait times average <strong>24.5 minutes</strong> against a scheduled 10-minute headway.</li>
+                <li><strong>App Discrepancies:</strong> Chalo app ETAs show an average variance of <strong>+14 minutes</strong> due to untracked traffic chokes.</li>
+                <li><strong>Amenities Deficit:</strong> Benches are occupied or damaged; only 28% of surveyed stops feature digital route indicators.</li>
+            </ul>
+            <div class="modal-highlight-card alert-card">
+                <strong>⚠️ Peak Stress Factor:</strong> 72% of students report fear of missing college lecture attendance thresholds due to sudden bus bunching and delays.
+            </div>
+        `
+    },
+    'journey-3': {
+        tag: 'COMMUTER JOURNEY STAGE 3 / 4',
+        title: '🛑 Stage 3: Boarding Bottleneck & Crush Load',
+        body: `
+            <p>When the bus finally arrives, orderly queues disintegrate into aggressive boarding competition as waiting crowds exceed bus capacity.</p>
+            <h4>Critical Boarding Hazards:</h4>
+            <ul>
+                <li><strong>High Footboard Steps:</strong> Non-low-floor older buses have a 45cm first step, posing acute hazards for senior citizens and students carrying heavy bags.</li>
+                <li><strong>Footboard Commuting:</strong> Overcrowded doors force younger male passengers to hang onto exterior railings while bus is in motion.</li>
+                <li><strong>Conductor Obstruction:</strong> Inability of conductors to navigate packed aisles results in missed ticket collections.</li>
+            </ul>
+            <div class="modal-highlight-card">
+                <strong>💡 Ground Proposal:</strong> Barricaded queue railings and student volunteers during 7:30–9:00 AM can reduce boarding dwell time by 35%.
+            </div>
+        `
+    },
+    'journey-4': {
+        tag: 'COMMUTER JOURNEY STAGE 4 / 4',
+        title: '🚍 Stage 4: In-Transit Travel & Campus Arrival',
+        body: `
+            <p>The onboard transit phase across the 6.8 km Malad–Ismail Yusuf College corridor is characterized by intense physical discomfort and congestion delays.</p>
+            <h4>Travel Realities:</h4>
+            <ul>
+                <li><strong>Off-Peak vs Peak Variance:</strong> Off-peak duration is 16 minutes; morning rush extends this to <strong>42–48 minutes</strong> (+26 min delay).</li>
+                <li><strong>Crush Capacity:</strong> Buses designed for 52 seated + 20 standing regularly carry <strong>105+ passengers (94% crush load)</strong>.</li>
+                <li><strong>Thermal Discomfort:</strong> Non-AC buses suffer interior cabin temperatures of 34°C+ with poor air circulation in standing crush.</li>
+            </ul>
+            <div class="modal-highlight-card">
+                <strong>🎯 Policy Solution:</strong> Running dedicated point-to-point "College Fast Shuttles" skipping non-essential intermediate stops directly between Malad Station and Ismail Yusuf College.
+            </div>
+        `
+    }
+};
+
+window.openDetailModal = function(key) {
+    var item = modalData[key];
+    if (!item) return;
+
+    var modal = document.getElementById('cardDetailModal');
+    var tagEl = document.getElementById('modalDetailTag');
+    var titleEl = document.getElementById('modalDetailTitle');
+    var bodyEl = document.getElementById('modalDetailBody');
+
+    if (!modal) return;
+
+    if (tagEl) tagEl.textContent = item.tag;
+    if (titleEl) titleEl.textContent = item.title;
+    if (bodyEl) bodyEl.innerHTML = item.body;
+
+    modal.classList.add('open');
+    document.body.style.overflow = 'hidden';
+};
+
+window.closeDetailModal = function() {
+    var modal = document.getElementById('cardDetailModal');
+    if (modal) {
+        modal.classList.remove('open');
+        document.body.style.overflow = 'auto';
+    }
+};
+
+function initDetailModalEvents() {
+    var closeBtn = document.getElementById('closeDetailModalBtn');
+    var closeFooterBtn = document.getElementById('closeDetailModalBtnFooter');
+    var modal = document.getElementById('cardDetailModal');
+
+    if (closeBtn) closeBtn.addEventListener('click', window.closeDetailModal);
+    if (closeFooterBtn) closeFooterBtn.addEventListener('click', window.closeDetailModal);
+
+    if (modal) {
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                window.closeDetailModal();
+            }
+        });
+    }
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            window.closeDetailModal();
+        }
+    });
+}
+
 
 // =====================================================================
 // Survey Response Dataset (60 Entries)
@@ -356,145 +709,132 @@ function initInteractiveTransitHub() {
 // ---------------------------------------------------------------------
 // 2. Route, Fare & Peak-Hour Delay Calculator
 // ---------------------------------------------------------------------
+// ---------------------------------------------------------------------
+// 2. Route, Fare & Peak-Hour Delay Calculator (Official BEST Distance Fare Logic)
+// ---------------------------------------------------------------------
+function calculateBestFare(distanceKm, busType) {
+    // Official BEST fare slabs
+    // Non-AC: <= 5km: Rs.10 | 5-10km: Rs.15 | 10-15km: Rs.20 | 15-20km: Rs.30
+    // AC:     <= 5km: Rs.12 | 5-10km: Rs.20 | 10-15km: Rs.30 | 15-20km: Rs.35
+    var isAc = (busType === 'ac');
+    if (distanceKm <= 5) {
+        return isAc ? 12 : 10;
+    } else if (distanceKm <= 10) {
+        return isAc ? 20 : 15;
+    } else if (distanceKm <= 15) {
+        return isAc ? 30 : 20;
+    } else {
+        return isAc ? 35 : 30;
+    }
+}
+
 function initRouteCalculator() {
     var originSelect = document.getElementById('originSelect');
     var destSelect = document.getElementById('destSelect');
     var calcBtn = document.getElementById('calcRouteBtn');
+    var busTypeRadios = document.querySelectorAll('input[name="busType"]');
 
-    if (!originSelect || !destSelect || !calcBtn) return;
+    if (!originSelect || !destSelect) return;
 
-    var routeMatrix = {
-        "Malad Station (W) -> Ismail Yusuf College": {
-            offPeak: "16 mins", peak: "42 mins", delay: "+26 mins", fare: "₹6 (Non-AC) / ₹10 (AC)",
-            routes: ["Route 202", "Route 203", "Route 459"],
-            note: "📍 Bottlenecks at SV Road Mith Chowki & Jogeshwari West flyover during 8:00–10:30 AM college rush."
-        },
-        "Malad Station (W) -> Jogeshwari Station": {
-            offPeak: "14 mins", peak: "36 mins", delay: "+22 mins", fare: "₹6 (Non-AC) / ₹6 (AC)",
-            routes: ["Route 202", "Route 203"],
-            note: "📍 Severe choke point near Oshiwara bridge and SV Road signal."
-        },
-        "Malad Station (W) -> Andheri Station": {
-            offPeak: "24 mins", peak: "55 mins", delay: "+31 mins", fare: "₹10 (Non-AC) / ₹15 (AC)",
-            routes: ["Route 202", "Route 459"],
-            note: "📍 Major delay crossing Jogeshwari flyover and Andheri subway junctions."
-        },
-        "Malad Station (W) -> Mindspace Malad": {
-            offPeak: "8 mins", peak: "20 mins", delay: "+12 mins", fare: "₹6 (Non-AC) / ₹6 (AC)",
-            routes: ["Route 203", "Route 290"],
-            note: "📍 Link Road commercial corridor; high passenger turnaround at Inorbit Mall stop."
-        },
-        "Mith Chowki -> Ismail Yusuf College": {
-            offPeak: "14 mins", peak: "38 mins", delay: "+24 mins", fare: "₹6 (Non-AC) / ₹10 (AC)",
-            routes: ["Route 202", "Route 203"],
-            note: "📍 Mith Chowki flyover construction causes 15+ min queueing during morning rush."
-        },
-        "Mith Chowki -> Jogeshwari Station": {
-            offPeak: "12 mins", peak: "32 mins", delay: "+20 mins", fare: "₹6 (Non-AC) / ₹6 (AC)",
-            routes: ["Route 202", "Route 203"],
-            note: "📍 Signal delay at Behram Baug junction on SV Road."
-        },
-        "Mith Chowki -> Andheri Station": {
-            offPeak: "22 mins", peak: "48 mins", delay: "+26 mins", fare: "₹10 (Non-AC) / ₹15 (AC)",
-            routes: ["Route 202", "Route 459"],
-            note: "📍 High traffic density along Link Road and SV Road intersection."
-        },
-        "Mith Chowki -> Mindspace Malad": {
-            offPeak: "6 mins", peak: "15 mins", delay: "+9 mins", fare: "₹6 (Non-AC) / ₹6 (AC)",
-            routes: ["Route 203"],
-            note: "📍 Direct connection down Link Road; mild queue at Mindspace signal."
-        },
-        "Goregaon Bus Depot -> Ismail Yusuf College": {
-            offPeak: "9 mins", peak: "25 mins", delay: "+16 mins", fare: "₹6 (Non-AC) / ₹6 (AC)",
-            routes: ["Route 202", "Route 345", "Route 459"],
-            note: "📍 Direct connectivity via Western Express Highway; bus departure delays from depot bay."
-        },
-        "Goregaon Bus Depot -> Jogeshwari Station": {
-            offPeak: "10 mins", peak: "24 mins", delay: "+14 mins", fare: "₹6 (Non-AC) / ₹6 (AC)",
-            routes: ["Route 202", "Route 345"],
-            note: "📍 Moderate delay near Goregaon Flyover exit into SV Road."
-        },
-        "Goregaon Bus Depot -> Andheri Station": {
-            offPeak: "18 mins", peak: "40 mins", delay: "+22 mins", fare: "₹10 (Non-AC) / ₹12 (AC)",
-            routes: ["Route 345", "Route 459"],
-            note: "📍 Heavy bottleneck on WEH near Hub Mall and Gundavali metro station."
-        },
-        "Goregaon Bus Depot -> Mindspace Malad": {
-            offPeak: "12 mins", peak: "28 mins", delay: "+16 mins", fare: "₹6 (Non-AC) / ₹6 (AC)",
-            routes: ["Route 203", "Route 459"],
-            note: "📍 Westbound vehicles face delays at Goregaon railway level/subway crossing."
-        },
-        "Oshiwara -> Ismail Yusuf College": {
-            offPeak: "11 mins", peak: "29 mins", delay: "+18 mins", fare: "₹6 (Non-AC) / ₹6 (AC)",
-            routes: ["Route 203", "Route 459"],
-            note: "📍 Good road conditions on Link Road; choke point at Jogeshwari West link bridge."
-        },
-        "Oshiwara -> Jogeshwari Station": {
-            offPeak: "8 mins", peak: "20 mins", delay: "+12 mins", fare: "₹6 (Non-AC) / ₹6 (AC)",
-            routes: ["Route 203"],
-            note: "📍 Short transit distance; rickshaw halting causes stop congestion."
-        },
-        "Oshiwara -> Andheri Station": {
-            offPeak: "16 mins", peak: "38 mins", delay: "+22 mins", fare: "₹6 (Non-AC) / ₹10 (AC)",
-            routes: ["Route 203", "Route 459"],
-            note: "📍 Heavy peak hour delay near D.N. Nagar Metro interchange."
-        },
-        "Oshiwara -> Mindspace Malad": {
-            offPeak: "10 mins", peak: "22 mins", delay: "+12 mins", fare: "₹6 (Non-AC) / ₹6 (AC)",
-            routes: ["Route 203"],
-            note: "📍 Northbound corridor runs faster; slight delay near Infiniti Mall."
-        },
-        "Jogeshwari (E) -> Ismail Yusuf College": {
-            offPeak: "5 mins", peak: "14 mins", delay: "+9 mins", fare: "₹6 (Non-AC) / ₹6 (AC)",
-            routes: ["Route 202", "Route 345"],
-            note: "📍 Immediate neighborhood connection; pedestrian spillover near WEH highway slip."
-        },
-        "Jogeshwari (E) -> Jogeshwari Station": {
-            offPeak: "6 mins", peak: "16 mins", delay: "+10 mins", fare: "₹6 (Non-AC) / ₹6 (AC)",
-            routes: ["Route 202", "Route 345"],
-            note: "📍 Severe east-west railway subway bottleneck with narrow carriage width."
-        },
-        "Jogeshwari (E) -> Andheri Station": {
-            offPeak: "12 mins", peak: "30 mins", delay: "+18 mins", fare: "₹6 (Non-AC) / ₹10 (AC)",
-            routes: ["Route 345", "Route 459"],
-            note: "📍 Western Express Highway south-bound queue near Bisleri junction."
-        },
-        "Jogeshwari (E) -> Mindspace Malad": {
-            offPeak: "20 mins", peak: "46 mins", delay: "+26 mins", fare: "₹10 (Non-AC) / ₹15 (AC)",
-            routes: ["Route 202", "Route 203"],
-            note: "📍 Cross-corridor trip traversing east-west subway and busy SV Road market zone."
-        }
+    // Comprehensive Corridor Stops Telemetry & Distance Mapping
+    var corridorDistances = {
+        // Required exact specs
+        "Malad Station (W) -> Mith Chowki": { dist: 2.2, offPeak: "7 mins", peak: "18 mins", delay: "+11 mins", routes: ["Route 203", "Route 290"], note: "⚠️ Mith Chowki intersection faces severe signal queuing during morning peak." },
+        "Malad Station (W) -> Ismail Yusuf College": { dist: 6.8, offPeak: "16 mins", peak: "42 mins", delay: "+26 mins", routes: ["Route 202", "Route 203", "Route 459"], note: "⚠️ Major bottlenecks at SV Road Mith Chowki & Jogeshwari West flyover during 8:00–10:30 AM college rush." },
+        "Malad Station (W) -> Jogeshwari Station (E)": { dist: 8.5, offPeak: "18 mins", peak: "44 mins", delay: "+26 mins", routes: ["Route 202", "Route 345"], note: "⚠️ Choke point across Jogeshwari rail bridge and WEH eastern arterial." },
+        "Malad Station (W) -> Jogeshwari Station": { dist: 8.5, offPeak: "15 mins", peak: "38 mins", delay: "+23 mins", routes: ["Route 202", "Route 203"], note: "⚠️ Narrow carriage width along SV Road market zone." },
+        "Malad Station (W) -> Andheri Station": { dist: 12.1, offPeak: "24 mins", peak: "55 mins", delay: "+31 mins", routes: ["Route 202", "Route 459"], note: "⚠️ Major delay crossing Jogeshwari flyover and Andheri subway junctions." },
+        "Malad Station (W) -> Mindspace Malad": { dist: 3.0, offPeak: "8 mins", peak: "20 mins", delay: "+12 mins", routes: ["Route 203", "Route 290"], note: "⚠️ Link Road commercial corridor; high passenger turnaround at Inorbit Mall stop." },
+
+        // Mith Chowki origin pairs
+        "Mith Chowki -> Ismail Yusuf College": { dist: 5.6, offPeak: "14 mins", peak: "36 mins", delay: "+22 mins", routes: ["Route 202", "Route 203"], note: "⚠️ SV Road corridor queueing between Malad Liberty Garden and Goregaon." },
+        "Mith Chowki -> Jogeshwari Station (E)": { dist: 7.2, offPeak: "16 mins", peak: "40 mins", delay: "+24 mins", routes: ["Route 202", "Route 345"], note: "⚠️ Delay near Oshiwara bridge and Jogeshwari east-west link." },
+        "Mith Chowki -> Jogeshwari Station": { dist: 7.2, offPeak: "14 mins", peak: "34 mins", delay: "+20 mins", routes: ["Route 202", "Route 203"], note: "⚠️ Signal delay at Behram Baug junction on SV Road." },
+        "Mith Chowki -> Andheri Station": { dist: 10.8, offPeak: "22 mins", peak: "48 mins", delay: "+26 mins", routes: ["Route 202", "Route 459"], note: "⚠️ High traffic density along Link Road and SV Road intersection." },
+        "Mith Chowki -> Mindspace Malad": { dist: 1.8, offPeak: "5 mins", peak: "12 mins", delay: "+7 mins", routes: ["Route 203"], note: "⚠️ Direct connection down Link Road; mild queue at Mindspace signal." },
+
+        // Goregaon Bus Depot origin pairs
+        "Goregaon Bus Depot -> Ismail Yusuf College": { dist: 4.2, offPeak: "9 mins", peak: "25 mins", delay: "+16 mins", routes: ["Route 202", "Route 345", "Route 459"], note: "⚠️ Direct connectivity via Western Express Highway; bus departure delays from depot bay." },
+        "Goregaon Bus Depot -> Jogeshwari Station (E)": { dist: 4.8, offPeak: "11 mins", peak: "26 mins", delay: "+15 mins", routes: ["Route 345"], note: "⚠️ Slip-road congestion merging onto WEH Southbound." },
+        "Goregaon Bus Depot -> Jogeshwari Station": { dist: 4.8, offPeak: "10 mins", peak: "24 mins", delay: "+14 mins", routes: ["Route 202", "Route 345"], note: "⚠️ Moderate delay near Goregaon Flyover exit into SV Road." },
+        "Goregaon Bus Depot -> Andheri Station": { dist: 8.5, offPeak: "18 mins", peak: "40 mins", delay: "+22 mins", routes: ["Route 345", "Route 459"], note: "⚠️ Heavy bottleneck on WEH near Hub Mall and Gundavali metro station." },
+        "Goregaon Bus Depot -> Mindspace Malad": { dist: 4.6, offPeak: "12 mins", peak: "28 mins", delay: "+16 mins", routes: ["Route 203", "Route 459"], note: "⚠️ Westbound vehicles face delays at Goregaon railway subway crossing." },
+        "Goregaon Bus Depot -> Mith Chowki": { dist: 4.1, offPeak: "10 mins", peak: "24 mins", delay: "+14 mins", routes: ["Route 203"], note: "⚠️ Link road junction queue at Bangur Nagar." },
+
+        // Oshiwara origin pairs
+        "Oshiwara -> Ismail Yusuf College": { dist: 3.8, offPeak: "10 mins", peak: "26 mins", delay: "+16 mins", routes: ["Route 203", "Route 459"], note: "⚠️ Good road conditions on Link Road; choke point at Jogeshwari West link bridge." },
+        "Oshiwara -> Jogeshwari Station (E)": { dist: 4.3, offPeak: "12 mins", peak: "28 mins", delay: "+16 mins", routes: ["Route 202", "Route 345"], note: "⚠️ Transit via Oshiwara rail underpass." },
+        "Oshiwara -> Jogeshwari Station": { dist: 4.3, offPeak: "8 mins", peak: "20 mins", delay: "+12 mins", routes: ["Route 203"], note: "⚠️ Short transit distance; rickshaw halting causes stop congestion." },
+        "Oshiwara -> Andheri Station": { dist: 7.6, offPeak: "16 mins", peak: "38 mins", delay: "+22 mins", routes: ["Route 203", "Route 459"], note: "⚠️ Heavy peak hour delay near D.N. Nagar Metro interchange." },
+        "Oshiwara -> Mindspace Malad": { dist: 4.9, offPeak: "10 mins", peak: "22 mins", delay: "+12 mins", routes: ["Route 203"], note: "⚠️ Northbound corridor runs faster; slight delay near Infiniti Mall." },
+        "Oshiwara -> Mith Chowki": { dist: 4.5, offPeak: "11 mins", peak: "24 mins", delay: "+13 mins", routes: ["Route 203"], note: "⚠️ Northbound Link Road queue." },
+
+        // Jogeshwari Station (E) & Jogeshwari (E) origin pairs
+        "Jogeshwari Station (E) -> Ismail Yusuf College": { dist: 2.4, offPeak: "5 mins", peak: "14 mins", delay: "+9 mins", routes: ["Route 202", "Route 345"], note: "⚠️ Immediate neighborhood connection; pedestrian spillover near WEH highway slip." },
+        "Jogeshwari Station (E) -> Jogeshwari Station": { dist: 1.2, offPeak: "4 mins", peak: "12 mins", delay: "+8 mins", routes: ["Route 202"], note: "⚠️ Rail subway transit crossing East to West." },
+        "Jogeshwari Station (E) -> Andheri Station": { dist: 5.4, offPeak: "12 mins", peak: "30 mins", delay: "+18 mins", routes: ["Route 345", "Route 459"], note: "⚠️ Western Express Highway south-bound queue near Bisleri junction." },
+        "Jogeshwari Station (E) -> Mindspace Malad": { dist: 8.6, offPeak: "20 mins", peak: "46 mins", delay: "+26 mins", routes: ["Route 202", "Route 203"], note: "⚠️ Cross-corridor trip traversing east-west subway and busy SV Road market zone." },
+        "Jogeshwari Station (E) -> Mith Chowki": { dist: 7.2, offPeak: "18 mins", peak: "42 mins", delay: "+24 mins", routes: ["Route 202"], note: "⚠️ Westbound traffic through Jogeshwari junction." },
+
+        "Jogeshwari (E) -> Ismail Yusuf College": { dist: 2.4, offPeak: "5 mins", peak: "14 mins", delay: "+9 mins", routes: ["Route 202", "Route 345"], note: "⚠️ Immediate neighborhood connection; pedestrian spillover near WEH highway slip." },
+        "Jogeshwari (E) -> Jogeshwari Station": { dist: 1.2, offPeak: "4 mins", peak: "12 mins", delay: "+8 mins", routes: ["Route 202"], note: "⚠️ East-west railway subway bottleneck with narrow carriage width." },
+        "Jogeshwari (E) -> Jogeshwari Station (E)": { dist: 0.8, offPeak: "3 mins", peak: "8 mins", delay: "+5 mins", routes: ["Route 202"], note: "⚠️ Eastern station access road." },
+        "Jogeshwari (E) -> Andheri Station": { dist: 5.4, offPeak: "12 mins", peak: "30 mins", delay: "+18 mins", routes: ["Route 345", "Route 459"], note: "⚠️ Western Express Highway south-bound queue near Bisleri junction." },
+        "Jogeshwari (E) -> Mindspace Malad": { dist: 8.6, offPeak: "20 mins", peak: "46 mins", delay: "+26 mins", routes: ["Route 202", "Route 203"], note: "⚠️ Cross-corridor trip traversing east-west subway and busy SV Road market zone." },
+        "Jogeshwari (E) -> Mith Chowki": { dist: 7.2, offPeak: "18 mins", peak: "42 mins", delay: "+24 mins", routes: ["Route 202"], note: "⚠️ Westbound traffic through Jogeshwari junction." }
     };
+
+    function getSelectedBusType() {
+        var selected = 'non-ac';
+        busTypeRadios.forEach(function(radio) {
+            if (radio.checked) selected = radio.value;
+        });
+        return selected;
+    }
 
     function updateCalculator() {
         var origin = originSelect.value;
         var dest = destSelect.value;
         var key = origin + ' -> ' + dest;
+        var busType = getSelectedBusType();
 
-        var data = routeMatrix[key];
+        var data = corridorDistances[key];
         if (!data) {
-            // Default calculation if identical or unlisted
+            // Fallback estimation if origin equals destination or unusual pair
+            var fallbackDist = (origin === dest) ? 1.0 : 6.0;
             data = {
+                dist: fallbackDist,
                 offPeak: "12 mins",
                 peak: "30 mins",
                 delay: "+18 mins",
-                fare: "₹6 (Non-AC) / ₹10 (AC)",
                 routes: ["Route 202", "Route 203"],
-                note: "📍 Standard corridor travel. Expect delays at primary traffic junctions during peak periods."
+                note: "ℹ️ Standard corridor transit. Expect delays at primary intersections during morning and evening rush hours."
             };
         }
+
+        // Calculate specific and dual fares
+        var nonAcFare = calculateBestFare(data.dist, 'non-ac');
+        var acFare = calculateBestFare(data.dist, 'ac');
+        var selectedFare = (busType === 'ac') ? acFare : nonAcFare;
 
         var resOffPeak = document.getElementById('resOffPeak');
         var resPeak = document.getElementById('resPeak');
         var resDelay = document.getElementById('resDelay');
         var resFare = document.getElementById('resFare');
+        var resDistance = document.getElementById('resDistance');
         var resBusRoutes = document.getElementById('resBusRoutes');
         var resRouteNote = document.getElementById('resRouteNote');
 
+        if (resDistance) resDistance.textContent = '~' + data.dist + ' km';
         if (resOffPeak) resOffPeak.textContent = data.offPeak;
         if (resPeak) resPeak.textContent = data.peak;
         if (resDelay) resDelay.textContent = data.delay;
-        if (resFare) resFare.textContent = data.fare;
+
+        if (resFare) {
+            var activeLabel = (busType === 'ac') ? 'AC Bus' : 'Non-AC Bus';
+            resFare.innerHTML = '<strong>₹' + selectedFare + '</strong> (' + activeLabel + ') <span style="font-size: 0.78rem; opacity: 0.8; font-weight: normal; margin-left: 6px;">[Non-AC: ₹' + nonAcFare + ' | AC: ₹' + acFare + ']</span>';
+        }
+
         if (resRouteNote) resRouteNote.textContent = data.note;
 
         if (resBusRoutes) {
@@ -508,9 +848,15 @@ function initRouteCalculator() {
         }
     }
 
-    calcBtn.addEventListener('click', updateCalculator);
+    if (calcBtn) calcBtn.addEventListener('click', updateCalculator);
     originSelect.addEventListener('change', updateCalculator);
     destSelect.addEventListener('change', updateCalculator);
+    busTypeRadios.forEach(function(r) {
+        r.addEventListener('change', updateCalculator);
+    });
+
+    // Run initial calculation immediately
+    updateCalculator();
 }
 
 // ---------------------------------------------------------------------
