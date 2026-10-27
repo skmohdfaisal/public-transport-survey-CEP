@@ -1200,7 +1200,42 @@ function initCommuterReportingFeed() {
     var countBadge = document.getElementById('reportCountBadge');
     var toast = document.getElementById('reportToast');
 
+    var routeSelect = document.getElementById('repRoute');
+    var customRouteInput = document.getElementById('repCustomRoute');
+    var stopSelect = document.getElementById('repStop');
+    var customStopInput = document.getElementById('repCustomStop');
+
     if (!feedContainer) return;
+
+    // Toggle custom bus route input
+    if (routeSelect && customRouteInput) {
+        routeSelect.addEventListener('change', function() {
+            if (this.value === '__custom__') {
+                customRouteInput.style.display = 'block';
+                customRouteInput.required = true;
+                customRouteInput.focus();
+            } else {
+                customRouteInput.style.display = 'none';
+                customRouteInput.required = false;
+                customRouteInput.value = '';
+            }
+        });
+    }
+
+    // Toggle custom bus stop input
+    if (stopSelect && customStopInput) {
+        stopSelect.addEventListener('change', function() {
+            if (this.value === '__custom__') {
+                customStopInput.style.display = 'block';
+                customStopInput.required = true;
+                customStopInput.focus();
+            } else {
+                customStopInput.style.display = 'none';
+                customStopInput.required = false;
+                customStopInput.value = '';
+            }
+        });
+    }
 
     var reports = [
         {
@@ -1266,17 +1301,27 @@ function initCommuterReportingFeed() {
             e.preventDefault();
 
             var nameInput = document.getElementById('repName');
-            var routeInput = document.getElementById('repRoute');
-            var stopInput = document.getElementById('repStop');
             var issueInput = document.getElementById('repIssue');
             var commentInput = document.getElementById('repComment');
 
-            if (!nameInput || !routeInput || !stopInput || !issueInput || !commentInput) return;
+            if (!nameInput || !issueInput || !commentInput) return;
+
+            // Determine final route value (standard selection vs custom entered)
+            var finalRoute = routeSelect ? routeSelect.value : 'General Route';
+            if (finalRoute === '__custom__') {
+                finalRoute = customRouteInput && customRouteInput.value.trim() ? customRouteInput.value.trim() : 'Custom Bus Route';
+            }
+
+            // Determine final stop value (standard selection vs custom entered)
+            var finalStop = stopSelect ? stopSelect.value : 'Corridor Stop';
+            if (finalStop === '__custom__') {
+                finalStop = customStopInput && customStopInput.value.trim() ? customStopInput.value.trim() : 'Custom Bus Stop';
+            }
 
             var newReport = {
                 name: nameInput.value.trim(),
-                route: routeInput.value,
-                stop: stopInput.value,
+                route: finalRoute,
+                stop: finalStop,
                 issue: issueInput.value,
                 comment: commentInput.value.trim(),
                 time: "Just now"
@@ -1286,6 +1331,16 @@ function initCommuterReportingFeed() {
             renderFeed();
 
             form.reset();
+
+            // Re-hide custom inputs after form reset
+            if (customRouteInput) {
+                customRouteInput.style.display = 'none';
+                customRouteInput.required = false;
+            }
+            if (customStopInput) {
+                customStopInput.style.display = 'none';
+                customStopInput.required = false;
+            }
 
             if (toast) {
                 toast.style.display = 'block';
